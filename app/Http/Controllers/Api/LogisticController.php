@@ -26,7 +26,7 @@ class LogisticController extends Controller
     public function index()
     {
 
-        $calls = UserCall::with('salesInfo.ad', 'salesInfo.salesManager' ,'salesInfo.source','user.level','user.subscriptions')->paginate();
+        $calls = UserCall::with('salesInfo.ad', 'salesInfo.salesManager', 'salesInfo.source', 'user.level', 'user.subscriptions', 'user.subscriptions.payment', 'salesInfo.source', 'user.level', 'user.subscriptions', 'user.subscriptions.payment.paymentMethod')->paginate();
         // dd($calls);
         return UserCallResource::collection($calls);
        

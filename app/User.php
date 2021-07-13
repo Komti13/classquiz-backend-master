@@ -91,6 +91,10 @@ class User extends Authenticatable
         return $this->hasMany('App\Transaction');
     }
 
+    public function feedbacks()
+    {
+        return $this->hasMany('App\Feedback');
+    }
 
     public function subscriptions()
     {

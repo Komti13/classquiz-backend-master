@@ -28,7 +28,8 @@ class LogisticController extends Controller
         //  });
         // $users = User::paginate();
         // return UserResource::collection($users);
-        $calls = UserCall::all();
+        $calls = UserCall::with('salesInfo.ad', 'salesInfo.salesManager', 'salesInfo.source', 'user.level', 'user.subscriptions')->paginate();
+    
         return UserCallResource::collection($calls);
 
 

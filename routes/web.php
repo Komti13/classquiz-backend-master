@@ -62,8 +62,7 @@ Route::group(['namespace' => 'Admin', 'middleware' => 'admin'], function () {
 
     Route::get('logs', '\Rap2hpoutre\LaravelLogViewer\LogViewerController@index')->name('logs');
 
-    // Route::get('/logistics', 'LogisticController@logistics')->name('logistics');
-    Route::get('/logistics', 'LogisticController@index');
+    Route::get('/logistics', 'LogisticController@index')->name('logistics');
 
 
 });
