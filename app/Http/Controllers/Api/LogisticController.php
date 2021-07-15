@@ -10,9 +10,12 @@ use App\Http\Controllers\Controller;
 use App\User;
 use App\Http\Resources\User as UserResource;
 use App\Http\Resources\UserCall as UserCallResource;
+use App\Http\Resources\Subscription as SubResource;
+
 use App\Http\Resources\SalesInfo as SalesResource;
 
 use App\SalesInfo;
+use App\Subscription;
 use App\UserCall;
 use PhpParser\Node\Expr\Cast\Object_;
 
@@ -26,11 +29,9 @@ class LogisticController extends Controller
     public function index()
     {
 
-        $calls = UserCall::with('salesInfo.ad', 'salesInfo.salesManager', 'salesInfo.source', 'user.level', 'user.subscriptions', 'user.subscriptions.payment', 'salesInfo.source', 'user.level', 'user.subscriptions', 'user.subscriptions.payment.paymentMethod')->paginate();
-        // dd($calls);
-        return UserCallResource::collection($calls);
-       
-        
+        $calls = Subscription::with('user.level', 'user.country', 'user.usercalls', 'user.usercalls.salesInfo', 'user.usercalls.salesInfo.salesManager', 'user.usercalls.salesInfo.source', 'user.usercalls.salesInfo.ad', 'payment', 'payment.paymentMethod', 'payment.delivery')->paginate();
+        return SubResource::collection($calls);
+   
     
     }
 

@@ -19,6 +19,11 @@ class Subscription extends JsonResource
             'pack' => new Pack($this->pack),
             'created_at' => $this->created_at->toDateTimeString(),
             'updated_at' => $this->updated_at->toDateTimeString(),
+            'user'=>$this->user,
+            'payment'=>$this->payment,
+            'token' => $this->token,
+
+
         ];
     }
 }

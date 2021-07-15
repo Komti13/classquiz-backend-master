@@ -30,5 +30,8 @@ class Payment extends Model
     public function subscription(){
         return $this->belongsTo('App\Subscription');
     }
-
+    public function delivery()
+    {
+        return $this->hasOne('App\Delivery');
+    }
 }

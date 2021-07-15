@@ -102,7 +102,7 @@ class User extends Authenticatable
     }
     public function usercalls()
     {
-        return $this->hasMany('App\UserCall');
+        return $this->hasOne('App\UserCall');
     }
 
     public function tokens()
