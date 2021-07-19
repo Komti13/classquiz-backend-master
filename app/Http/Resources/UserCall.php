@@ -23,7 +23,8 @@ class UserCall extends JsonResource
             'conversation_date' => $this->conversation_date,//->toDateTimeString(),
             'Sms' => $this->sms,
             'sales_info' => $this->salesInfo,
-            'user' => $this->user
+            'user' => $this->user,
+            'user_status'=>$this->userStatus
         ];
     }
 }

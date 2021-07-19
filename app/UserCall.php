@@ -7,11 +7,15 @@ use App\Http\Resources\SalesInfo as SalesResource;
 
 class UserCall extends Model
 {
-    protected $fillable = ["actual_status", "notes",  "conversation_date","SMS_id","sales_info_id", "user_id"];
+    protected $fillable = ["user_status_id", "notes",  "conversation_date","SMS_id","sales_info_id", "user_id"];
     
     public function user()
     {
         return $this->belongsTo('App\User');
+    }
+    public function userStatus()
+    {
+        return $this->belongsTo('App\UserStatus');
     }
     public function salesInfo()
     {

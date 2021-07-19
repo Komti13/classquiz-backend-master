@@ -190,7 +190,7 @@
                         }
                     },
                     {
-                        data: 'user.usercalls.actual_status',
+                        data: 'user.usercalls.user_status.name',
                         "render": function(data, type, row) {
                             if (data == null) {
                                 return '----';
