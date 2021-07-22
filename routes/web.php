@@ -62,8 +62,18 @@ Route::group(['namespace' => 'Admin', 'middleware' => 'admin'], function () {
 
     Route::get('logs', '\Rap2hpoutre\LaravelLogViewer\LogViewerController@index')->name('logs');
 
-    Route::resource('logistics', 'LogisticController')->except('show');
-    Route::get('/logistics', 'LogisticController@index')->name('logistics');
+    // Route::resource('logistics', 'LogisticController');
+    // Route::get('/logistics', 'LogisticController@index')->name('logistics');
+   
+Route::group(['prefix' => 'logistics/'], function () {
+        Route::get('/', 'LogisticController@index')->name('logistics');
+        Route::get('/create', 'LogisticController@create')->name('logistics.create');
+        Route::post('/{source}', 'LogisticController@store')->name('logistics.store');
+    //     Route::get('/{source}/edit', 'LogisticController@edit')->name('users.edit');
+    //     Route::patch('/{source}', 'LogisticController@update')->name('sources.update');
+    //     Route::delete('/{source}', 'LogisticController@destroy')->name('sources.destroy');
+        // Route::get('/{source}', 'LogisticController@show')->name('sources.show');
+    });
 
 
 });

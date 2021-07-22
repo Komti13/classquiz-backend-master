@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cookie;
 use App\Http\Controllers\Controller;
 use App\Subscription;
 use App\Chapter;
@@ -17,6 +18,7 @@ use App\Pack;
 use App\Source;
 use App\PaymentMethod;
 use App\PaymentStatus;
+use App\Sms;
 use App\UserStatus;
 use Carbon\Carbon;
 
@@ -43,18 +45,21 @@ class LogisticController extends Controller
         // $role = Role::where('name', $role)->first();
         $schools = School::pluck('name', 'id');
         $countries = Country::pluck('name', 'id');
-        $levels = Level::pluck('name', 'id');
+        // $levels = Level::pluck('name', 'id');
         $sources = Source::pluck('type', 'id');
         $ads = Ad::pluck('type', 'id');
         $methodes = PaymentMethod::pluck('name', 'id');
         $payStatus = PaymentStatus::pluck('name', 'id');
         $status = UserStatus::pluck('name', 'id');
-
         $packs = Pack::pluck('name', 'id');
-        return view('admin.logistics.create', compact('schools', 'countries', 'levels','sources','ads','methodes','payStatus','packs','status'));
+        
+       
+            return view('admin.logistics.create', compact('schools', 'countries', 'sources','ads','methodes','payStatus','packs','status'));
+
+        
     }
 
-    public function store()
+    public function store($source)
     {
         // request()->validate([
         //     'name' => 'required|string',
@@ -97,8 +102,60 @@ class LogisticController extends Controller
 
         // return redirect()->route('users.index', ['role' => $role->name])
         //     ->with('success', 'User created successfully');
-        return $_REQUEST;
+        // $sms=new Sms;
+        // $sms->text=request('sms_text');
+        // $sms->type=request('type');
+        // $sms->save();
+        // return $sms->id;
+        $schools = School::pluck('name', 'id');
+        $countries = Country::pluck('name', 'id');
+        $levels = Level::pluck('name', 'id');
+        $sources = Source::pluck('type', 'id');
+        $ads = Ad::pluck('type', 'id');
+        $methodes = PaymentMethod::pluck('name', 'id');
+        $payStatus = PaymentStatus::pluck('name', 'id');
+        $status = UserStatus::pluck('name', 'id');
+        $packs = Pack::pluck('name', 'id','level_id');
+        $nbchild=0;
+        if ($source=='first') {
+            // request()->validate([
+            //     'name' => 'required|string',
+            //     'phone' => 'required|string|unique:users',
+            //     'address' => 'required|string',
+            //     'children' => 'required|min:0',
+            // ]);
+           $nbchild=request('children');
+           Cookie::queue('nbchildren', $nbchild, 10);
+            return view('admin.logistics.next1', compact('status'));
+
+        }
+        if ($source=='second') {
+            if (request('calltype')==0) {
+                $nbchild =Cookie::get('nbchildren');
+                return view('admin.logistics.next2', compact('schools', 'countries','levels', 'sources','ads','methodes','payStatus','packs','status','nbchild'));
+    
+            } else if(request('calltype')==1){
+                return view('admin.logistics.feedback');
+    
+            }else{
+                return view('admin.logistics.techSupport');
+            }
+            
+           
+        }
+        if ($source=='third') {
+            return $_REQUEST;
+            // return view('admin.logistics.next2', compact('schools', 'countries','levels', 'sources','ads','methodes','payStatus','packs','status','nbchild'));
+
+        }
+         else { 
+            
+            return view('admin.logistics.create', compact('countries'));
+
+        }
+
     }
+    
     public function logistics()
     {
         return view('admin.logistics.index');

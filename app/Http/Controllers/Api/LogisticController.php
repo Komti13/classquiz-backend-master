@@ -8,6 +8,8 @@ use App\Governorate;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\User;
+use App\Pack;
+
 use App\Http\Resources\User as UserResource;
 use App\Http\Resources\UserCall as UserCallResource;
 use App\Http\Resources\Subscription as SubResource;
@@ -29,10 +31,15 @@ class LogisticController extends Controller
     public function index()
     {
 
-        $calls = Subscription::with('user.level', 'user.country', 'user.usercalls','user.usercalls.userStatus', 'user.usercalls.salesInfo', 'user.usercalls.salesInfo.salesManager', 'user.usercalls.salesInfo.source', 'user.usercalls.salesInfo.ad', 'payment', 'payment.paymentMethod', 'payment.delivery')->paginate();
-        return SubResource::collection($calls);
-   
-    
+        // $calls = Subscription::with('user.level', 'user.country', 'user.usercalls','user.usercalls.userStatus', 'user.usercalls.salesInfo', 'user.usercalls.salesInfo.salesManager', 'user.usercalls.salesInfo.source', 'user.usercalls.salesInfo.ad', 'payment', 'payment.paymentMethod', 'payment.delivery')->paginate();
+        // return SubResource::collection($calls);
+        $packs = Pack::select([
+             'id', 'name', 'level_id','price'
+        ])->get();
+        return response()->json([
+            'packs' => $packs,
+        ]);
+    // return $packs;
     }
 
     /**

@@ -5,7 +5,11 @@ namespace App\Http\Controllers\Api;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\ChapterType;
+use App\Chapter;
+
 use App\Http\Resources\ChapterType as ChapterTypeResource;
+use App\Http\Resources\Chapter as ChapterResource;
+
 
 /**
  * @resource ChapterTypes

@@ -59,7 +59,7 @@
                     </div>
                 </div>
                 <div class="grid-body ">
-                    {!! Form::open(['route' => ['logistics.store'], 'files' => true]) !!}
+                    {!! Form::open(['route' => ['logistics.store','source'=>'first']]) !!}
                     <div class="form-group">
                         {!! Form::label('name', 'Name') !!}
                         {!! Form::text('name', null, ['class' => 'form-control', 'placeholder' => 'Name']) !!}
@@ -69,227 +69,34 @@
                         {!! Form::text('phone', null, ['class' => 'form-control', 'placeholder' => 'Phone']) !!}
                     </div>
                     <div class="form-group">
+                        {!! Form::label('phone2', 'Phone 2') !!}
+                        {!! Form::text('phone2', null, ['class' => 'form-control', 'placeholder' => 'Phone 2']) !!}
+                    </div>
+                    <div class="form-group">
                         {!! Form::label('address', 'Address') !!}
                         {!! Form::text('address', null, ['class' => 'form-control', 'placeholder' => 'Address']) !!}
                     </div>
-                    <div class="form-group">
+                    {{-- <div class="form-group">
                         {!! Form::label('level_id', 'Level') !!}
                         {!! Form::select('level_id', $levels, null) !!}
-                    </div>
+                    </div> --}}
 
                     <div class="form-group">
                         {!! Form::label('country_id', 'Country') !!}
                         {!! Form::select('country_id', $countries, null) !!}
                     </div>
-
-                </div>
-            </div>
-            {{-- About Call --}}
-            <div class="grid simple">
-                <div class="grid-title">
-                    <h4>About <span class="semi-bold">Call</span></h4>
-                    <div class="tools">
-                        <a href="javascript:;" class="collapse"></a>
-                        <a href="#grid-config" data-toggle="modal" class="config"></a>
-                        <a href="javascript:;" class="reload"></a>
-                        <a href="javascript:;" class="remove"></a>
-                    </div>
-                </div>
-                <div class="grid-body ">
                     <div class="form-group">
-                        {!! Form::label('status', 'Status') !!}
-                        {!! Form::select('status', $status, null) !!}
+                        {!! Form::label('children', 'Number of Children') !!}
+                        {!! Form::number('children', null, ['class' => 'form-control', 'placeholder' => 0]) !!}
                     </div>
-                    <div class="input-append success form-group" style="width: 96%;">
-                        {!! Form::label('call_date', 'Call Date') !!}
-                        {!! Form::input('call_date', 'call_date', null, ['class' => 'form-control', 'placeholder' => 'Call Date', 'id' => 'datepick']) !!}
-                    </div>
-                    <div class="form-group">
-                        {!! Form::label('notes', 'Notes') !!}
-                        {!! Form::textarea('notes', null, ['class' => 'form-control', 'placeholder' => 'Notes...']) !!}
-                    </div>
-
-                </div>
-            </div>
-            {{-- About SMS --}}
-            <div class="grid simple">
-                <div class="grid-title">
-                    <h4>About <span class="semi-bold">SMS</span></h4>
-                    <div class="tools">
-                        <a href="javascript:;" class="collapse"></a>
-                        <a href="#grid-config" data-toggle="modal" class="config"></a>
-                        <a href="javascript:;" class="reload"></a>
-                        <a href="javascript:;" class="remove"></a>
-                    </div>
-                </div>
-                <div class="grid-body ">
-                    <div class="form-group">
-                        {!! Form::label('type', 'SMS Type') !!}
-                        {!! Form::select('type', ['type1', 'type2', 'type3'], null) !!}
-                    </div>
-                    <div class="form-group">
-                        {!! Form::label('sms_text', 'Text') !!}
-                        {!! Form::textarea('sms_text', null, ['class' => 'form-control', 'placeholder' => 'SMS Text...']) !!}
-                    </div>
-
-
-                </div>
-            </div>
-            {{-- About Sales --}}
-            <div class="grid simple">
-                <div class="grid-subtitle">
-                    <h4>Sale Operation Informations</h4>
-                </div>
-            </div>
-
-            {{-- About source --}}
-            <div class="grid simple">
-
-                <div class="grid-title">
-                    <h4>About <span class="semi-bold">Source</span></h4>
-                    <div class="tools">
-                        <a href="javascript:;" class="collapse"></a>
-                        <a href="#grid-config" data-toggle="modal" class="config"></a>
-                        <a href="javascript:;" class="reload"></a>
-                        <a href="javascript:;" class="remove"></a>
-                    </div>
-                </div>
-                <div class="grid-body ">
-                    <div class="form-group">
-                        {!! Form::label('source', 'Source') !!}
-                        {!! Form::select('source', ['---', $sources], null) !!}
-                    </div>
-                </div>
-            </div>
-            {{-- About AD --}}
-
-            <div class="grid simple">
-                <div class="grid-title">
-                    <h4>About <span class="semi-bold">AD</span></h4>
-                    <div class="tools">
-                        <a href="javascript:;" class="collapse"></a>
-                        <a href="#grid-config" data-toggle="modal" class="config"></a>
-                        <a href="javascript:;" class="reload"></a>
-                        <a href="javascript:;" class="remove"></a>
-                    </div>
-                </div>
-                <div class="grid-body ">
-                    <div class="form-group">
-                        {!! Form::label('ad', 'AD') !!}
-                        {!! Form::select('ad', ['---', $ads], null) !!}
-                    </div>
-
-                </div>
-            </div>
-            {{-- About Pack --}}
-
-            <div class="grid simple">
-                <div class="grid-title">
-                    <h4>About <span class="semi-bold">Pack</span></h4>
-                    <div class="tools">
-                        <a href="javascript:;" class="collapse"></a>
-                        <a href="#grid-config" data-toggle="modal" class="config"></a>
-                        <a href="javascript:;" class="reload"></a>
-                        <a href="javascript:;" class="remove"></a>
-                    </div>
-                </div>
-                <div class="grid-body ">
-                    <div class="form-group">
-                        {!! Form::label('pack', 'Pack Name') !!}
-                        {!! Form::select('pack', ['---', $packs], null) !!}
-                    </div>
-                    <div class="form-group">
-                        {!! Form::label('price', 'Price') !!}
-                        {!! Form::text('price', null, ['class' => 'form-control', 'placeholder' => 'Pack Price']) !!}
-                    </div>
-                </div>
-            </div>
-            {{-- About Payment --}}
-
-            <div class="grid simple">
-                <div class="grid-title">
-                    <h4>About <span class="semi-bold">Payment</span></h4>
-                    <div class="tools">
-                        <a href="javascript:;" class="collapse"></a>
-                        <a href="#grid-config" data-toggle="modal" class="config"></a>
-                        <a href="javascript:;" class="reload"></a>
-                        <a href="javascript:;" class="remove"></a>
-                    </div>
-                </div>
-                <div class="grid-body ">
-                    <div class="form-group">
-                        {!! Form::label('payment', 'Payment Methode') !!}
-                        {!! Form::select('payment', ['---', $methodes], null) !!}
-                    </div>
-                    <div class="form-group">
-                        {!! Form::label('amount', 'Amount') !!}
-                        {!! Form::text('amount', null, ['class' => 'form-control', 'placeholder' => 'Amount to pay']) !!}
-                    </div>
-                    <div class="form-group">
-                        {!! Form::label('paystatus', 'Payment Status') !!}
-                        {!! Form::select('paystatus', ['---', $payStatus], null) !!}
-                    </div>
-                </div>
-            </div>
-            {{-- About Delivery --}}
-
-            <div class="grid simple">
-                <div class="grid-title">
-                    <h4>About <span class="semi-bold">Delivery</span></h4>
-                    <div class="tools">
-                        <a href="javascript:;" class="collapse"></a>
-                        <a href="#grid-config" data-toggle="modal" class="config"></a>
-                        <a href="javascript:;" class="reload"></a>
-                        <a href="javascript:;" class="remove"></a>
-                    </div>
-                </div>
-                <div class="grid-body ">
-                    <div class="input-append success form-group" style="width: 96%;">
-                        {!! Form::label('delivery_date', 'Delivery Date') !!}
-                        {!! Form::input('date', 'delivery_date', null, ['class' => 'form-control', 'placeholder' => 'Delivery Date']) !!}
-                    </div>
-                    <div class="form-group">
-                        {!! Form::label('delstatus', 'Delivery Status') !!}
-                        {!! Form::select('delstatus', ['---', 'Delivery launched'=>'Delivery launched', 'To be confirmed'=>'To be confirmed', 'Cacelled before launch'=>'Cacelled before launch', 'payed (credit card)'=>'payed (credit card)', 'payed(tranfer)'=>'payed(tranfer)', 'payed(Physical C)'=>'payed(Physical C)'], null) !!}
-                    </div>
-                    <div class="form-group">
-                        <label for="fees" class="col-sm-4 col-md-4 control-label text-left ">Delivery Fees</label>
-                        <div class="col-sm-7 col-md-7">
-                            <div class="input-group">
-                                <div id="radioBtn" class="btn-group">
-                                    <a class="btn btn-primary btn-sm active" data-toggle="fees" data-title="true">YES</a>
-                                    <a class="btn btn-primary btn-sm notActive" data-toggle="fees" data-title="false">NO</a>
-                                </div>
-                                <input type="hidden" name="fees" id="fees" value="true">
-                            </div>
-                        </div>
-                    </div>
-
-                </div>
-            </div>
-            <div class="grid simple">
-                <div class="grid-title">
-                    <h4>Token <span class="semi-bold"></span></h4>
-                    <div class="tools">
-                        <a href="javascript:;" class="collapse"></a>
-                        <a href="#grid-config" data-toggle="modal" class="config"></a>
-                        <a href="javascript:;" class="reload"></a>
-                        <a href="javascript:;" class="remove"></a>
-                    </div>
-                </div>
-                <div class="grid-body ">
-                    <div class="form-group">
-                        {!! Form::label('token', 'Token') !!}
-                        {!! Form::text('token', 'NHDNCNUGWDZ485D', ['class' => 'form-control', 'placeholder' => 'Amount to pay']) !!}
-                    </div>
-
                     <div class="text-right">
                         <br>
-                        <button type="submit" class="btn btn-primary">Save <i
+                        <button type="submit" class="btn btn-primary">Next <i
                                 class="icon-arrow-left13 position-right"></i></button>
                     </div>
                 </div>
             </div>
+            
         </div>
     </div>
 
@@ -307,7 +114,7 @@
 
     <script type="text/javascript">
         $(document).ready(function() {
-            $("#level_id, #subject_id, #pack_type_id ,#country_id,#status,#type,#source,#ad,#payment,#paystatus,#pack,#delstatus")
+            $("#country_id")
                 .select2({
                     width: '100%'
                 })
