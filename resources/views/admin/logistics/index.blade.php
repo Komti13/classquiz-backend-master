@@ -47,6 +47,7 @@
                                 <th id="th1" class="th2">Payment</th>
                                 <th id="th1">Delivery Status</th>
                                 <th id="th1" class="th2">Pack</th>
+                                <th id="th1" class="th2">Pack Type</th>
                                 <th id="th1" class="th2">Original Price</th>
                                 <th id="th1" class="th2">Current Price</th>
                                 <th id="th1" class="th2">Activation Code</th>
@@ -123,6 +124,7 @@
             var table = $('#example5').DataTable({
                 processing: true,
                 serverSide: true,
+                order: [[ 1, "desc" ]],
                 //if there is a problem in search datatable comment next line
                 orderCellsTop: true,
                 ajax: "{{ route('logistics') }}",
@@ -164,7 +166,14 @@
                     },
                     {
                         orderable: false,
-                        data: 'user.level.name'
+                        data: 'user.level.name',
+                        "render": function(data, type, row) {
+                            if (data == null) {
+                                return '----';
+                            } else {
+                                return data;
+                            }
+                        }
                          
                     },
                     {
@@ -269,6 +278,11 @@
                     {
                         searchable: false,
                         orderable: false,
+                        data: 'pack.pack_type.name'
+                    },
+                    {  
+                        searchable: false,
+                        orderable: false,
                         data: 'pack.price'
                     },
                     {
@@ -350,7 +364,7 @@
                 },
             });
             $("div.toolbar").html(
-                '<div class="table-tools-actions"><a class="btn btn-primary" href="{{ route('logistics.create') }}" style="margin-left:12px" id="test2">Add</a></div>'
+                '<div class="table-tools-actions"><a class="btn btn-primary" href="{{ route('form') }}" style="margin-left:12px" id="test2">Add</a></div>'
             );
             
             $(document).on('click', '.delete', function(e) {

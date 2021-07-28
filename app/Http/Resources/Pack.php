@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Resources;
-
+use App\PackType;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class Pack extends JsonResource
@@ -32,6 +32,8 @@ class Pack extends JsonResource
             'order' => $this->order,
             'created_at' => $this->created_at->toDateTimeString(),
             'updated_at' => $this->updated_at->toDateTimeString(),
+            'pack_type'=>$this->packType,
+
         ];
     }
 }

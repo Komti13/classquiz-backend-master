@@ -21,7 +21,9 @@ class UserCall extends JsonResource
             'created_at' => $this->created_at,//->toDateTimeString(),
             'updated_at' => $this->updated_at,//->toDateTimeString(),
             'conversation_date' => $this->conversation_date,//->toDateTimeString(),
+            'call_type'=>$this->call_type,
             'Sms' => $this->sms,
+            'Sms_sent' => $this->sms_sent,
             'sales_info' => $this->salesInfo,
             'user' => $this->user,
             'user_status'=>$this->userStatus

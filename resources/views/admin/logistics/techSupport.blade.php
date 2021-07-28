@@ -1,74 +1,113 @@
-@extends('admin.layout.layout',['title'=>'Logistics'])
-@section('css')
-    <link href="{{ asset('assets/plugins/bootstrap-select2/select2.css') }}" rel="stylesheet" type="text/css"
-        media="screen" />
-    <link href="{{ asset('assets/plugins/bootstrap-datepicker/css/datepicker.css') }}" rel="stylesheet" type="text/css" />
-    <style type="text/css">
-  
-
-        .countries {
-            display: none;
-        }
-
-        .input {
-            background: #fff;
-            border: solid 1px #e5e9ec;
-            margin-bottom: 4px !important;
-        }
-
-        .simple {
-            margin-bottom: 20px;
-        }
-
-    </style>
-@endsection
-@section('content')
-    <div class="row-fluid">
-        <div class="span12">
-            {{--TechSupport --}}
-            <div class="grid simple">
-                <div class="grid-title">
-                    <h4>Technical <span class="semi-bold">Support</span></h4>
-                    <div class="tools">
-                        <a href="javascript:;" class="collapse"></a>
-                        <a href="#grid-config" data-toggle="modal" class="config"></a>
-                        <a href="javascript:;" class="reload"></a>
-                        <a href="javascript:;" class="remove"></a>
-                    </div>
-                </div>
-                <div class="grid-body ">
-                    {!! Form::open(['route' => ['logistics.store','source'=>'techsupport']]) !!}
-                  
-                    <div class="form-group">
-                        {!! Form::label('techsupport', 'Technical Support') !!}
-                        {!! Form::textarea('techsupport', null, ['class' => 'form-control', 'placeholder' => 'write the problem...']) !!}
-                    </div>
-                    <div class="text-right">
-                        <br>
-                        <button type="submit" class="btn btn-primary">Save <i
-                                class="icon-arrow-left13 position-right"></i></button>
-                    </div>
+<div class="row-fluid">
+    <div class="span12">
+        {{-- TechSupport --}}
+        <div class="grid simple">
+            <div class="grid-title">
+                <h4>Technical <span class="semi-bold">Support</span></h4>
+                <div class="tools">
+                    <a href="javascript:;" class="collapse"></a>
+                    <a href="#grid-config" data-toggle="modal" class="config"></a>
+                    <a href="javascript:;" class="reload"></a>
+                    <a href="javascript:;" class="remove"></a>
                 </div>
             </div>
-           
+            <div class="grid-body ">
+                {!! Form::open(['route' => ['logistics.store', 'source' => 'third']]) !!}
+
+                <div class="form-group">
+                    {!! Form::textarea('techsupport', null, ['class' => 'form-control', 'placeholder' => 'write the problem...']) !!}
+                </div>
+                <div class="text-right">
+                    <br>
+                    <input type="submit" name="previous" class="previous action-button-previous" value="Previous"
+                        id="previous4" />
+                    <button type="submit" name="next" class="next action-button" value="Next Step" id="submit4">
+                        Next</i></button>
+
+                </div>
+            </div>
         </div>
+
     </div>
+    <script>
+        $('form').submit(function(e) {
+            e.preventDefault();
+            source = 'second';
+            var form = $(this);
+            var url = form.attr('action');
+            var $inputs = $('form :input');
+            var support = {};
+            $inputs.each(function() {
+                support[this.name] = $(this).val();
+            });
+            $.ajax({
+                type: 'POST',
+                url: url,
+                data: support,
+                success: function(data) {
+                    console.log("data from controller", data)
 
+                }
+            });
+        })
+        $("#submit4").click(function() {
 
+            current_fs = $(this).parents("fieldset");
+            next_fs = $(this).parents("fieldset").next();
 
-@endsection
-@section('js')
-    <script src="{{ asset('assets/plugins/bootstrap-select2/select2.min.js') }}" type="text/javascript"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
-    <script
-        src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/js/bootstrap-datetimepicker.min.js">
-    </script>
+            //Add Class Active
+            $("#progressbar li").eq($("fieldset").index(next_fs)).addClass("active");
 
-    <script type="text/javascript">
-        $(document).ready(function() {
-            console.log("feedback");
-           
+            //show the next fieldset
+            next_fs.show();
+            //hide the current fieldset with style
+            current_fs.animate({
+                opacity: 0
+            }, {
+                step: function(now) {
+                    // for making fielset appear animation
+                    opacity = 1 - now;
+
+                    current_fs.css({
+                        'display': 'none',
+                        'position': 'relative'
+                    });
+                    next_fs.css({
+                        'opacity': opacity
+                    });
+                },
+                duration: 600
+            });
         });
+        $("#previous4").click(function() {
 
+            current_fs = $(this).parents("fieldset");
+            previous_fs = $(this).parents("fieldset").prev();
+
+            //Remove class active
+            $("#progressbar li").eq($("fieldset").index(current_fs)).removeClass("active");
+
+            //show the previous fieldset
+            previous_fs.show();
+
+            //hide the current fieldset with style
+            current_fs.animate({
+                opacity: 0
+            }, {
+                step: function(now) {
+                    // for making fielset appear animation
+                    opacity = 1 - now;
+
+                    current_fs.css({
+                        'display': 'none',
+                        'position': 'relative'
+                    });
+                    previous_fs.css({
+                        'opacity': opacity
+                    });
+                },
+                duration: 600
+            });
+        });
     </script>
-@endsection
+</div>

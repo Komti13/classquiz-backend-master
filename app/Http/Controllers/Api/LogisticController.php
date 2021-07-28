@@ -15,7 +15,7 @@ use App\Http\Resources\UserCall as UserCallResource;
 use App\Http\Resources\Subscription as SubResource;
 
 use App\Http\Resources\SalesInfo as SalesResource;
-
+use App\PackPromotion;
 use App\SalesInfo;
 use App\Subscription;
 use App\UserCall;
@@ -36,10 +36,14 @@ class LogisticController extends Controller
         $packs = Pack::select([
              'id', 'name', 'level_id','price'
         ])->get();
+        $promo = PackPromotion::select([
+            'id', 'pack_id', 'value'
+       ])->get();
+
         return response()->json([
             'packs' => $packs,
+            'promo' => $promo,
         ]);
-    // return $packs;
     }
 
     /**
@@ -49,7 +53,6 @@ class LogisticController extends Controller
      */
     public function create()
     {
-        //
     }
 
     /**

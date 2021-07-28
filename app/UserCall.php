@@ -7,7 +7,7 @@ use App\Http\Resources\SalesInfo as SalesResource;
 
 class UserCall extends Model
 {
-    protected $fillable = ["user_status_id", "notes",  "conversation_date","SMS_id","sales_info_id", "user_id"];
+    protected $fillable = ["user_status_id", "notes",  "conversation_date","sms_id","sms_sent","sales_info_id", "user_id","call_type"];
     
     public function user()
     {

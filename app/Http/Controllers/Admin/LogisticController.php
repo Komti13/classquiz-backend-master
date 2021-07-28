@@ -7,30 +7,34 @@ use Illuminate\Support\Facades\Cookie;
 use App\Http\Controllers\Controller;
 use App\Subscription;
 use App\Chapter;
-use App\PackType;
+use App\PackPromotion;
 use App\User;
 use App\Ad;
 use App\Level;
 use App\Role;
 use App\School;
 use App\Country;
+use App\Delivery;
+use App\Governorate;
 use App\Pack;
+use App\Payment;
 use App\Source;
 use App\PaymentMethod;
 use App\PaymentStatus;
+use App\SalesInfo;
 use App\Sms;
+use App\Token;
+use App\UserCall;
 use App\UserStatus;
 use Carbon\Carbon;
-
-
+use Illuminate\Support\Facades\Auth;
 
 class LogisticController extends Controller
 {
     public function index()
     {
         if (request()->isXmlHttpRequest()) {
-            $calls = Subscription::with('user.level', 'user.usercalls','user.usercalls.userStatus', 'user.usercalls.salesInfo', 'user.usercalls.salesInfo.salesManager', 'user.usercalls.salesInfo.source', 'user.usercalls.salesInfo.ad', 'payment', 'payment.paymentMethod', 'payment.delivery');
-
+            $calls = Subscription::with('user.level', 'user.usercalls', 'user.usercalls.userStatus', 'user.usercalls.salesInfo', 'user.usercalls.salesInfo.salesManager', 'user.usercalls.salesInfo.source', 'user.usercalls.salesInfo.ad', 'payment', 'payment.paymentMethod', 'payment.delivery', 'pack.packType');
             return datatables()->eloquent($calls)->toJson();
         }
 
@@ -38,124 +42,152 @@ class LogisticController extends Controller
     }
     public function create()
     {
-
-        // $packTypes = PackType::pluck('name', 'id');
-        // $levels = Level::all();
-        // $chapters = Chapter::pluck('name', 'id');
-        // $role = Role::where('name', $role)->first();
         $schools = School::pluck('name', 'id');
         $countries = Country::pluck('name', 'id');
-        // $levels = Level::pluck('name', 'id');
         $sources = Source::pluck('type', 'id');
         $ads = Ad::pluck('type', 'id');
         $methodes = PaymentMethod::pluck('name', 'id');
         $payStatus = PaymentStatus::pluck('name', 'id');
         $status = UserStatus::pluck('name', 'id');
         $packs = Pack::pluck('name', 'id');
-        
-       
-            return view('admin.logistics.create', compact('schools', 'countries', 'sources','ads','methodes','payStatus','packs','status'));
+        $cities = Governorate::pluck('name', 'id');
 
-        
+
+        return view('admin.logistics.user_form', compact('schools', 'countries', 'sources', 'ads', 'methodes', 'payStatus', 'packs', 'status', 'cities'));
     }
 
     public function store($source)
     {
-        // request()->validate([
-        //     'name' => 'required|string',
-        //     'phone' => 'string|unique:users',
-        //     'address' => 'nullable|string',
-        //     'image' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
-        //     'school' => 'nullable|string',
-        //     'school_id' => 'exists:schools,id',
-        //     'country_id' => 'exists:countries,id',
-        //     'level_id' => 'exists:levels,id',
-        //     'email' => 'nullable|string|email|unique:users',
-        //     'password' => 'required|string|confirmed',
-        //     'enabled' => 'boolean',
-        // ]);
-        // $user = new User;
-        // $user->name = request('name');
-        // $user->phone = request('phone');
-        // $user->address = request('address');
-        // $user->school = request('school');
-        // $user->school_id = request('school_id');
-        // $user->level_id = request('level_id');
-        // $user->country_id = request('country_id');
-        // $user->email = strtolower(request('email'));
-        // $user->password = bcrypt(request('password'));
-        // if (request('image')) {
-        //     $imageName = time() . '.' . request('image')->getClientOriginalExtension();
-        //     request('image')->move(public_path('uploads/user/'), $imageName);
-        //     $user->image = $imageName;
-        // }
-
-        // $user->enabled = request('enabled') ? 1 : 0;
-        // $user->active = true;
-
-
-        // $user->save();
-
-        // $role = Role::where('name', $role)->first();
-        // $user->roles()->attach($role->id);
-
-
-        // return redirect()->route('users.index', ['role' => $role->name])
-        //     ->with('success', 'User created successfully');
-        // $sms=new Sms;
-        // $sms->text=request('sms_text');
-        // $sms->type=request('type');
-        // $sms->save();
-        // return $sms->id;
         $schools = School::pluck('name', 'id');
+        $status = UserStatus::pluck('name', 'id');
         $countries = Country::pluck('name', 'id');
         $levels = Level::pluck('name', 'id');
         $sources = Source::pluck('type', 'id');
         $ads = Ad::pluck('type', 'id');
         $methodes = PaymentMethod::pluck('name', 'id');
         $payStatus = PaymentStatus::pluck('name', 'id');
-        $status = UserStatus::pluck('name', 'id');
-        $packs = Pack::pluck('name', 'id','level_id');
-        $nbchild=0;
-        if ($source=='first') {
+        $packs = Pack::pluck('name', 'id', 'level_id', 'price');
+        $allpacks = Pack::select([
+            'id', 'price'
+        ])->get();
+        $promos = PackPromotion::select(
+            [
+                'id',
+                'pack_id',
+                'value'
+            ]
+        )->get();
+        $nbchild = 0;
+        if ($source == 'first') {
             // request()->validate([
             //     'name' => 'required|string',
             //     'phone' => 'required|string|unique:users',
             //     'address' => 'required|string',
             //     'children' => 'required|min:0',
             // ]);
-           $nbchild=request('children');
-           Cookie::queue('nbchildren', $nbchild, 10);
-            return view('admin.logistics.next1', compact('status'));
+            $nbchild = request('children');
+            Cookie::queue('nbchildren', $nbchild, 10);
 
+            return view('admin.logistics.call_form', compact('status'));
         }
-        if ($source=='second') {
-            if (request('calltype')==0) {
-                $nbchild =Cookie::get('nbchildren');
-                return view('admin.logistics.next2', compact('schools', 'countries','levels', 'sources','ads','methodes','payStatus','packs','status','nbchild'));
-    
-            } else if(request('calltype')==1){
+        if ($source == 'second') {
+            if (request('calltype') == 0) {
+                $nbchild = Cookie::get('nbchildren');
+                return view('admin.logistics.personal_form', compact('schools', 'countries', 'levels', 'sources', 'ads', 'methodes', 'payStatus', 'packs', 'status', 'nbchild'));
+            } else if (request('calltype') == 1) {
                 return view('admin.logistics.feedback');
-    
-            }else{
+            } else {
                 return view('admin.logistics.techSupport');
             }
-            
-           
         }
-        if ($source=='third') {
-            return $_REQUEST;
-            // return view('admin.logistics.next2', compact('schools', 'countries','levels', 'sources','ads','methodes','payStatus','packs','status','nbchild'));
+        if ($source == 'third') {
+            $user = new User;
+            $user->name = request('name');
+            if (request('phone2')) {
+                $user->phone = request('phone') . " /" . request('phone2');
+            } else {
+                $user->phone = request('phone');
+            }
+            $user->address = request('address') . " " . request('city_id');
+            $user->country_id = request('country_id');
+            $user->save();
+            $user->roles()->sync(Role::where('name', 'PARENT')->first());
+            $sales_info = new SalesInfo;
+            $sales_info->source_id = request('source');
+            $sales_info->ad_id = request('ad');
+            $sales_info->sales_manager_id = auth()->guard('admin')->user()->id;
+            $sales_info->save();
+            $userCall = new UserCall;
+            $userCall->sms_sent = false;
+            $sms = new Sms;
+            if (trim(request('sms_text'), ' ') != '' && trim(request('type'), ' ') != '') {
+                $sms->text = request('sms_text');
+                $sms->type = request('type');
+                $userCall->sms_sent = true;
+            }
+            $sms->save();
+            $userCall->sms_id = $sms->id;
+            $userCall->notes = request('notes');
+            $userCall->sales_info_id = $sales_info->id;
+            $userCall->user_id = $user->id;
+            $userCall->user_status_id = request('status');
+            $userCall->notes = request('notes');
+            $userCall->call_type = request('calltype');
+            $userCall->conversation_date = request('call_date');
+            $userCall->save();
+            
+            $payment = new Payment;
+            $payment->amount = request('amount');
+            $payment->user_id = $user->id;
+            $payment->payment_method_id = request('payment');
+            $payment->save();
+            if (request('delivery_date') != null) {
+                $delivery = new Delivery;
+                $delivery->delivery_date = request('delivery_date');
+                $delivery->delivery_status = request('delstatus');
+                $delivery->delivery_fees = request('fees');
+                $delivery->payment_id = $payment->id;
+                $delivery->save();
+            }
+            $nbchild = Cookie::get('nbchildren');
+            if ($nbchild > 0) {
+                for ($i = 0; $i < $nbchild; $i++) {
+                    $child = new User;
+                    $child->name = request('name' . $i);
+                    $child->level_id = request('level_id' . $i);
+                    $child->save();
+                    $child->roles()->sync(Role::where('name', 'STUDENT')->first());
+                    $user->students()->sync($child->id);
+                    $current_token = new Token;
+                    $current_token->token = request('current' . $i);
+                    $current_token->validity_start = Carbon::now();
+                    $current_token->validity_end = Carbon::now()->addYears(1);
+                    $current_token->value = request('promo_price' . $i);
+                    $current_token->user_id = $user->id;
+                    $current_token->save();
+                    if (request('next' . $i) != '') {
+                        $next_token = new Token;
+                        $next_token->token = request('next' . $i);
+                        $next_token->validity_start = Carbon::now()->addYears(1);
+                        $next_token->validity_end = Carbon::now()->addYears(2);
+                        $next_token->value = request('promo_price' . $i);
+                        $next_token->user_id = $user->id;
+                        $next_token->save();
+                    }
+                    $subscription = new Subscription;
+                    $subscription->pack_id = request('pack' . $i);
+                    $subscription->user_id = $user->id;
+                    $subscription->save();
+                }
+            }
 
-        }
-         else { 
-            
+
+            // return request()->all() ;
+        } else {
+
             return view('admin.logistics.create', compact('countries'));
-
         }
-
     }
-    
     public function logistics()
     {
         return view('admin.logistics.index');

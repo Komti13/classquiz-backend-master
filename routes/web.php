@@ -68,6 +68,15 @@ Route::group(['namespace' => 'Admin', 'middleware' => 'admin'], function () {
 Route::group(['prefix' => 'logistics/'], function () {
         Route::get('/', 'LogisticController@index')->name('logistics');
         Route::get('/create', 'LogisticController@create')->name('logistics.create');
+
+
+        Route::get('/form', function(){
+            return view('admin.logistics.form_template');
+        })->name('form');
+        // Route::post('/first','LogisticController@store1' )->name('first');
+        // Route::post('/second','LogisticController@store2' )->name('second');
+        // Route::post('/third','LogisticController@store3' )->name('third');
+
         Route::post('/{source}', 'LogisticController@store')->name('logistics.store');
     //     Route::get('/{source}/edit', 'LogisticController@edit')->name('users.edit');
     //     Route::patch('/{source}', 'LogisticController@update')->name('sources.update');

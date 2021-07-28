@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class SalesInfo extends Model
 {
-    protected $fillable = ["source", "salesManager", "ad"];
+    protected $fillable = ["source_id", "sales_manager_id", "ad_id"];
 
     public function source()
     {
@@ -19,10 +19,6 @@ class SalesInfo extends Model
     public function ad()
     {
         return $this->belongsTo('App\Ad');
-    }
-    public function userCall()
-    {
-        return $this->belongsTo('App\UserCall');
     }
     
   
