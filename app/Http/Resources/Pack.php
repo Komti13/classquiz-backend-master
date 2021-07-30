@@ -33,6 +33,8 @@ class Pack extends JsonResource
             'created_at' => $this->created_at->toDateTimeString(),
             'updated_at' => $this->updated_at->toDateTimeString(),
             'pack_type'=>$this->packType,
+            'level'=>$this->level,
+
 
         ];
     }

@@ -10,8 +10,15 @@
     <link href="{{ asset('assets/plugins/datatables-responsive/css/datatables.responsive.css') }}" rel="stylesheet"
         type="text/css" media="screen" />
 
-    <link rel="stylesheet" href="https://cdn.datatables.net/select/1.3.0/css/select.dataTables.min.css"/>
-    
+    <link rel="stylesheet" href="https://cdn.datatables.net/select/1.3.0/css/select.dataTables.min.css" />
+    <style>
+        table,
+        #th1,#th2 {
+            text-align: center
+        }
+        
+
+    </style>
     <!-- END PLUGIN CSS -->
 @endsection
 @section('content')
@@ -27,16 +34,16 @@
                         <a href="javascript:;" class="remove"></a>
                     </div>
                 </div>
-                <div class="grid-body" style="overflow:auto;">
-                 
+                <div class="grid-body" >
                     <table class="table" id="example5">
                         <thead>
                             <tr>
                                 <th></th>
-                                <th id="th1" >#ID</th>
-                                <th id="th1">Name</th>
+                                <th id="th1">N°</th>
+                                <th id="th1">#ID</th>
+                                <th id="th1"> Parent Name</th>
                                 <th id="th1">Phone</th>
-                                <th id="th1">Level</th>
+                                <th id="th1">Child Level</th>
                                 <th id="th1" class="date">Creation Date</th>
                                 <th id="th1">Source</th>
                                 <th id="th1">Status</th>
@@ -44,16 +51,16 @@
                                 <th id="th1">SMS sent</th>
                                 <th id="th1">Adrerss</th>
                                 <th id="th1" class="date">Conversion Date</th>
-                                <th id="th1" class="th2">Payment</th>
-                                <th id="th1">Delivery Status</th>
-                                <th id="th1" class="th2">Pack</th>
-                                <th id="th1" class="th2">Pack Type</th>
-                                <th id="th1" class="th2">Original Price</th>
-                                <th id="th1" class="th2">Current Price</th>
-                                <th id="th1" class="th2">Activation Code</th>
-                                <th id="th1" class="th2">Code Used</th>
-                                <th id="th1" class="th2">Final Status</th>
-                                <th id="th1" class="th2">Action</th>
+                                <th id="th2">Payment</th>
+                                <th id="th2">Delivery Status</th>
+                                <th id="th2">Pack</th>
+                                <th id="th2">Pack Type</th>
+                                <th id="th2">Original Price</th>
+                                <th id="th2">Current Price</th>
+                                <th id="th2">Activation Code</th>
+                                <th id="th2">Code Used</th>
+                                <th id="th2">Final Status</th>
+                                <th id="th2">Action</th>
                                 {{-- <th>Print</th> --}}
                             </tr>
                         </thead>
@@ -82,70 +89,80 @@
 
     <!-- END JAVASCRIPTS -->
     <script type="text/javascript">
-       
         $(document).ready(function() {
             $('#example5 thead tr ').clone(true).appendTo('#example5 thead');
-            
+
             $('#example5 thead tr:eq(1) #th1').each(function(i) {
                 var title = $(this).text();
                 $(this).html('<input type="text" placeholder="Search ' + title + '" />');
-
                 $('input', this).on('keyup change', function() {
-                   
-                    if (table.column(i+1).search() !== this.value ) {
+                    if (table.column(i +1).search() !== this.value) {
+                        console.log(table.column(i+1).search());
+                        console.log(this.value);
+
                         table
-                            .column(i+1)
+                            .column(i +1)
                             .search(this.value)
                             .draw();
                     }
                 });
             });
-            $('#example5 thead tr:eq(1) .th2').each(function(i) {
+            $('#example5 thead tr:eq(1) #th2').each(function(i) {
                 var title = $(this).text();
-                $(this).html('<input type="text" placeholder="Search here is disabled" disabled style="background-color: #d1d1d1"/>');
+                $(this).html(
+                    '<div style="width :150px">----</div>'
+                );
 
-                
+
             });
             $('#example5 thead tr:eq(1) .date').each(function(i) {
                 var title = $(this).text();
                 $(this).html('<input type="date" placeholder="Search ' + title + '" />');
 
                 $('input', this).on('keyup change', function() {
-                 
-
-                    if (table.column(i+1).search() !== this.value ) {
-                        table
-                            .column(i+1)
-                            .search(this.value)
-                            .draw();
+                    if (table.column(i + 1).search() !== this.value) {
+                        table.column(i + 1).search(this.value).draw();
                     }
+
                 });
             });
+           var packName,num=1;
             var table = $('#example5').DataTable({
                 processing: true,
                 serverSide: true,
-                order: [[ 1, "desc" ]],
-                //if there is a problem in search datatable comment next line
+                "scrollX": true,
                 orderCellsTop: true,
                 ajax: "{{ route('logistics') }}",
                 columns: [{
                         orderable: false,
                         className: 'select-checkbox',
-                        targets: 0,
+                        targets: 1,
                         defaultContent: ''
                     },
                     {
+                        data: num,
+                        name:num,
+                        "render": function(data, type, row) {
+                                return num++;
+                            
+                        }
+                    },
+                    {
+                        orderable: false,
+                        searchable:false,
                         data: 'user.id',
+                        name:'user.id',
                         "render": function(data, type, row) {
                             if (data == null) {
                                 return '----';
                             } else {
                                 return data;
                             }
-                        }
+                        },
                     },
                     {
                         data: 'user.name',
+                        name:'user.name',
                         "render": function(data, type, row) {
                             if (data == null) {
                                 return '----';
@@ -156,6 +173,7 @@
                     },
                     {
                         data: 'user.phone',
+                        name:'user.phone',
                         "render": function(data, type, row) {
                             if (data == null) {
                                 return '----';
@@ -165,8 +183,7 @@
                         }
                     },
                     {
-                        orderable: false,
-                        data: 'user.level.name',
+                        data: 'pack.level.name',
                         "render": function(data, type, row) {
                             if (data == null) {
                                 return '----';
@@ -174,21 +191,23 @@
                                 return data;
                             }
                         }
-                         
+
                     },
                     {
                         data: 'user.usercalls.created_at',
                         "render": function(data, type, row) {
                             if (data == null) {
                                 return '----';
+                            } else {
+                                return data;
                             }
                         },
-                        "searchable": false
-                        
+                        // "searchable": false
+
                     },
                     {
-                        searchable: false,
-                        orderable: false,
+                        // searchable: false,
+                        // orderable: false,
                         data: 'user.usercalls.sales_info.source.type',
                         "render": function(data, type, row) {
                             if (data == null) {
@@ -219,7 +238,7 @@
                         }
                     },
                     {
-                        data: 'user.usercalls.SMS_sent',
+                        data: 'user.usercalls.sms_sent',
                         "render": function(data, type, row) {
                             if (data == null) {
                                 return '----';
@@ -239,20 +258,24 @@
                         }
                     },
                     {
-                        
+
                         data: 'user.usercalls.conversation_date',
                         "render": function(data, type, row) {
                             if (data == null) {
                                 return '----';
+                            } else {
+                                return data;
+
                             }
                         }
                     },
                     {
-                        searchable: false,
-                        orderable: false,
+                        // searchable: false,
+                        // orderable: false,
                         data: 'payment.payment_method.name',
                         "render": function(data, type, row) {
                             if (data == null) {
+
                                 return '----';
                             } else {
                                 return data;
@@ -260,7 +283,7 @@
                         }
                     },
                     {
-                        
+
                         data: 'payment.delivery.delivery_status',
                         "render": function(data, type, row) {
                             if (data == null) {
@@ -271,22 +294,30 @@
                         }
                     },
                     {
-                        searchable: false,
-                        orderable: false,
-                        data: 'pack.name'
+                        // searchable: false,
+                        // orderable: false,
+                        data: 'pack.name',
+                        "render": function(data, type, row) {
+                            if (data == null) {
+                                return '----';
+                            } else {
+                                packName=data;
+                                return data;
+                            }
+                        }
                     },
                     {
-                        searchable: false,
-                        orderable: false,
+                        // searchable: false,
+                        // orderable: false,
                         data: 'pack.pack_type.name'
                     },
-                    {  
-                        searchable: false,
-                        orderable: false,
+                    {
+                        // searchable: false,
+                        // orderable: false,
                         data: 'pack.price'
                     },
                     {
-                        searchable: false,
+                        // searchable: false,
                         data: 'payment.amount',
                         "render": function(data, type, row) {
                             if (data == null) {
@@ -296,20 +327,26 @@
                             }
                         }
                     },
-                    {searchable: false,
-                        orderable: false,
+                    {
+                        // searchable: false,
+                        // orderable: false,
                         data: 'token.token',
                         "render": function(data, type, row) {
                             if (data == null) {
+                                
                                 return '----';
                             } else {
-                                return data;
+                                if (packName=='اشتراك السنة الحالية و السنة المقبلة') {
+                                    return data+'*';
+                                }
+                                else return data;
+                                
                             }
                         }
                     },
                     {
-                        searchable: false,
-                        orderable: false,
+                        // searchable: false,
+                        // orderable: false,
                         data: 'token.used',
                         "render": function(data, type, row) {
                             if (data == null) {
@@ -320,8 +357,8 @@
                         }
                     },
                     {
-                        searchable: false,
-                        orderable: false,
+                        // searchable: false,
+                        // orderable: false,
                         data: 'payment.current_status.name',
                         "render": function(data, type, row) {
                             if (data == null) {
@@ -333,8 +370,8 @@
                     },
                     {
                         data: null,
-                        orderable: false,
-                        searchable: false,
+                        // orderable: false,
+                        // searchable: false,
                         render: function(data, type, row, meta) {
                             return `<div class="btn-group">
                                     <a class="btn btn-mini btn-white"
@@ -363,10 +400,12 @@
                     "sInfo": "Showing <b>_START_ to _END_</b> of _TOTAL_ entries"
                 },
             });
+            // Search bar
+            $("#example5_filter").hide();
             $("div.toolbar").html(
                 '<div class="table-tools-actions"><a class="btn btn-primary" href="{{ route('form') }}" style="margin-left:12px" id="test2">Add</a></div>'
             );
-            
+
             $(document).on('click', '.delete', function(e) {
                 const id = $(this).data('id');
                 if (confirm('Are you sure?')) {

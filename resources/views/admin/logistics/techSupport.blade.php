@@ -12,10 +12,10 @@
                 </div>
             </div>
             <div class="grid-body ">
-                {!! Form::open(['route' => ['logistics.store', 'source' => 'third']]) !!}
+                {!! Form::open(['route' => ['logistics.store', 'source' => 'support']]) !!}
 
                 <div class="form-group">
-                    {!! Form::textarea('techsupport', null, ['class' => 'form-control', 'placeholder' => 'write the problem...']) !!}
+                    {!! Form::textarea('problem', null, ['class' => 'form-control', 'placeholder' => 'write the problem...']) !!}
                 </div>
                 <div class="text-right">
                     <br>

@@ -70,33 +70,9 @@
 </div>
 @endfor
 
-{{-- About SMS --}}
-<div class="grid simple">
-    <div class="grid-title">
-        <h4>About <span class="semi-bold">SMS</span></h4>
-        <div class="tools">
-            <a href="javascript:;" class="collapse"></a>
-            <a href="#grid-config" data-toggle="modal" class="config"></a>
-            <a href="javascript:;" class="reload"></a>
-            <a href="javascript:;" class="remove"></a>
-        </div>
-    </div>
-    <div class="grid-body ">
-        <div class="form-group">
-            {!! Form::label('type', 'SMS Type') !!}
-            {!! Form::select('type', ['type1', 'type2', 'type3'], null, ['id' => 'sms']) !!}
-        </div>
-        <div class="form-group">
-            {!! Form::label('sms_text', 'Text') !!}
-            {!! Form::textarea('sms_text', null, ['class' => 'form-control', 'placeholder' => 'SMS Text...']) !!}
-        </div>
-
-
-    </div>
-</div>
 {{-- About Sales --}}
 <div class="grid simple">
-    <div class="grid-subtitle">
+    <div class="grid-title" style="text-align: center; padding-top: 20px">
         <h4>Sale Operation Informations</h4>
     </div>
 </div>
@@ -141,6 +117,30 @@
     </div>
 </div>
 
+{{-- About SMS --}}
+<div class="grid simple">
+    <div class="grid-title">
+        <h4>Send <span class="semi-bold">SMS</span></h4>
+        <div class="tools">
+            <a href="javascript:;" class="collapse"></a>
+            <a href="#grid-config" data-toggle="modal" class="config"></a>
+            <a href="javascript:;" class="reload"></a>
+            <a href="javascript:;" class="remove"></a>
+        </div>
+    </div>
+    <div class="grid-body ">
+        <div class="form-group">
+            {!! Form::label('type', 'SMS Type') !!}
+            {!! Form::select('type', ['type1', 'type2', 'type3'], null, ['id' => 'sms']) !!}
+        </div>
+        <div class="form-group">
+            {!! Form::label('sms_text', 'Text') !!}
+            {!! Form::textarea('sms_text', null, ['class' => 'form-control', 'placeholder' => 'SMS Text...']) !!}
+        </div>
+
+
+    </div>
+</div>
 {{-- About Payment --}}
 
 <div class="grid simple">
@@ -220,11 +220,25 @@
             <div class="form-group">
                 <h4>Tokens For Child {{ $i }}</h4>
                 {!! Form::label('label', 'Current Year Token ') !!}
-                {!! Form::text('current', 'NHDNCNUGWDZ485D'.$i, ['class' => 'form-control', 'placeholder' => 'Amount to pay', 'name' => 'current' . $i]) !!}
-                <div id="test<?php echo $i; ?>" name="test">
-                    {!! Form::label('label', 'Next Year Token ') !!}
-                    {!! Form::text('next', 'MMMMMMMMMMMMMM'.$i, ['class' => 'form-control', 'placeholder' => 'Amount to pay', 'name' => 'next' . $i]) !!}
+                {!! Form::text('current', '', ['class' => 'form-control', 'placeholder' => 'token for this year', 'name' => 'current' . $i, 'id' => 'current' . $i]) !!}
+                <div id="tokeen<?php echo $i; ?>" class="tokeen">
+                    {!! Form::label('label', 'Next Year Token ', ['id' => 'label']) !!}
+                    {!! Form::text('next', '', ['class' => 'form-control next', 'placeholder' => 'token for next year', 'name' => 'next' . $i, 'id' => 'next' . $i]) !!}
                 </div>
+                <script>
+                    $(document).ready(function() {
+                        $.ajax({
+                            type: 'GET',
+                            url: '{{ Route('tokengen') }}',
+                            success: function(data) {
+                                $('#current' + `<?php echo $i; ?>`).val(data);
+                                $('.tokeen').hide();
+
+
+                            }
+                        });
+                    });
+                </script>
             </div>
         @endfor
 
@@ -240,6 +254,9 @@
 
 <script type="text/javascript">
     $(document).ready(function() {
+        var packs = JSON.parse(`<?php echo $allpacks; ?>`),
+            promo = JSON.parse(`<?php echo $promos; ?>`),
+            promo_exist = false;
         $("#sms,.levels,#source,#ad,#delstatus,#paystatus,#methode")
             .select2({
                 width: '100%'
@@ -262,22 +279,16 @@
             $('a[data-toggle="' + tog + '"][data-title="' + sel + '"]').removeClass('notActive')
                 .addClass('active');
         })
-        var packs, promo, promo_exist = false;
-        $.getJSON("http://api.classquiz.test/datal", function(data) {
-            packs = data.packs;
-            promo = data.promo;
-        });
+
+
         $(".levels")
             .on('change', function() {
                 var id = $(this).attr('id');
                 var z = id.charAt(id.length - 1);
-                $('#test' + z).hide();
+                $('#tokeen' + z).hide();
                 $("#pack" + z + " option").remove().end();
                 $("#pack" + z).val(null).trigger('change');
-
-                console.log(packs);
                 for (let i = 0; i < packs.length; i++) {
-
                     if (packs[i].level_id == $(this).val()) {
                         var option = new Option(packs[i].name, packs[i].id, false, false);
                         $packs.append(option).trigger('change');
@@ -285,10 +296,10 @@
 
                 }
 
-                $('.level > div > input').prop("disabled", true);
-                $('.level').hide();
-                $('.level[data-level-id="' + $(this).val() + '"]  > div > input').prop("disabled", false);
-                $('.level[data-level-id="' + $(this).val() + '"]').show();
+                // $('.level > div > input').prop("disabled", true);
+                // $('.level').hide();
+                // $('.level[data-level-id="' + $(this).val() + '"]  > div > input').prop("disabled", false);
+                // $('.level[data-level-id="' + $(this).val() + '"]').show();
             })
         $(".packs")
             .on('change', function() {
@@ -315,9 +326,16 @@
                 $("#pack" + z)
                     .one('change', function() {
                         var selectVal = $("#pack" + z + " option:selected").html();
-                        console.log($.trim($("#test" + z).html()))
                         if (selectVal === 'اشتراك السنة الحالية و السنة المقبلة') {
-                            $('#test' + z).show();
+                            $('#tokeen' + z).show();
+                            $.ajax({
+                                type: 'GET',
+                                url: '{{ Route('tokengen') }}',
+                                success: function(data) {
+                                    $('#next' + z).val(data)
+                                }
+                            });
+
                         }
                     })
             })
@@ -326,18 +344,16 @@
             source = 'third';
             var form = $(this);
             var url = form.attr('action');
-            console.log(form.attr('action'))
             var $inputs = $('form :input');
             var personal = {};
             $inputs.each(function() {
                 personal[this.name] = $(this).val();
             });
-            // console.log("personal", personal);
-            
+
             $.ajax({
                 type: 'POST',
                 url: url,
-                data:personal,
+                data: personal,
                 success: function(data) {
                     console.log("data from controller", data)
                 }
@@ -406,30 +422,30 @@
 
 
 
-    $(".subject > div > input").on("change", function() {
-        if ($(this).attr("type") == "radio") {
-            $(".chapter input").prop('checked', false);
-            $(".chapter input").prop("disabled", true);
-            $(this).parents(".subject").find("input").prop("disabled", false);
-        }
-    })
+    // $(".subject > div > input").on("change", function() {
+    //     if ($(this).attr("type") == "radio") {
+    //         $(".chapter input").prop('checked', false);
+    //         $(".chapter input").prop("disabled", true);
+    //         $(this).parents(".subject").find("input").prop("disabled", false);
+    //     }
+    // })
 
-    $('.expand').click(function() {
-        $(this).parents('.element').first().children('.expandable').slideToggle('slow');
-        var icon = $('.material-icons', this);
-        if (icon.text() == 'keyboard_arrow_right') {
-            icon.text('keyboard_arrow_down')
-        } else {
-            icon.text('keyboard_arrow_right')
-        }
-    });
+    // $('.expand').click(function() {
+    //     $(this).parents('.element').first().children('.expandable').slideToggle('slow');
+    //     var icon = $('.material-icons', this);
+    //     if (icon.text() == 'keyboard_arrow_right') {
+    //         icon.text('keyboard_arrow_down')
+    //     } else {
+    //         icon.text('keyboard_arrow_right')
+    //     }
+    // });
 
-    $('input[type="checkbox"][class!="chapter-input"]').change(function() {
-        if (this.checked) {
-            $(this).parents('.element').first().find('input[type="checkbox"]').prop('checked', true);
-        } else {
-            $(this).parents('.expandable').first().find('input[type="checkbox"]').prop('checked', false);
-        }
-    });
+    // $('input[type="checkbox"][class!="chapter-input"]').change(function() {
+    //     if (this.checked) {
+    //         $(this).parents('.element').first().find('input[type="checkbox"]').prop('checked', true);
+    //     } else {
+    //         $(this).parents('.expandable').first().find('input[type="checkbox"]').prop('checked', false);
+    //     }
+    // });
 </script>
 </div>

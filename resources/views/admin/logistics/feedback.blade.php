@@ -12,12 +12,12 @@
                 </div>
             </div>
             <div class="grid-body ">
-                {!! Form::open(['route' => ['logistics.store', 'source' => 'third']]) !!}
+                {!! Form::open(['route' => ['logistics.store', 'source' => 'feedback']]) !!}
 
 
                 <div class="form-group">
                     {!! Form::label('feebback', 'Client Feedback') !!}
-                    {!! Form::textarea('feebback', null, ['class' => 'form-control', 'placeholder' => 'write feedbacks...']) !!}
+                    {!! Form::textarea('feedback', null, ['class' => 'form-control', 'placeholder' => 'write feedbacks...']) !!}
                 </div>
                 <div class="text-right" class="d-flex justify-content-around">
                     <br>

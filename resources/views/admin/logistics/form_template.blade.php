@@ -20,6 +20,9 @@
             overflow: hidden;
             
         }
+        div.grid.simple{
+            margin-bottom: 0px
+        }
 
         /* .flexbox {
             display: flex;

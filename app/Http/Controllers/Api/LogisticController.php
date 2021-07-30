@@ -32,6 +32,8 @@ class LogisticController extends Controller
     {
 
         // $calls = Subscription::with('user.level', 'user.country', 'user.usercalls','user.usercalls.userStatus', 'user.usercalls.salesInfo', 'user.usercalls.salesInfo.salesManager', 'user.usercalls.salesInfo.source', 'user.usercalls.salesInfo.ad', 'payment', 'payment.paymentMethod', 'payment.delivery')->paginate();
+        //     $calls = Subscription::with( 'user.usercalls', 'user.usercalls.userStatus', 'user.usercalls.salesInfo', 'user.usercalls.salesInfo.salesManager', 'user.usercalls.salesInfo.source', 'user.usercalls.salesInfo.ad', 'pack.packType','pack.level', 'payment', 'payment.paymentMethod', 'payment.delivery')->paginate();
+       
         // return SubResource::collection($calls);
         $packs = Pack::select([
              'id', 'name', 'level_id','price'

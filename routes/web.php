@@ -61,6 +61,8 @@ Route::group(['namespace' => 'Admin', 'middleware' => 'admin'], function () {
     Route::resource('templates', 'TemplateController')->except('show');
 
     Route::get('logs', '\Rap2hpoutre\LaravelLogViewer\LogViewerController@index')->name('logs');
+    Route::get('generateToken', 'TokenController@generateToken')->name('tokengen');
+
 
     // Route::resource('logistics', 'LogisticController');
     // Route::get('/logistics', 'LogisticController@index')->name('logistics');
