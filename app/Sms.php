@@ -8,9 +8,9 @@ class Sms extends Model
 {
     protected $fillable = ["text","status_id","type"];
 
-    public function userCalls()
+    public function userCall()
     {
-        return $this->belongsTo('App\UserCalls');
+        return $this->belongsTo('App\UserCall');
     }
 
     

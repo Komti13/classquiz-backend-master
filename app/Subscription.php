@@ -30,6 +30,10 @@ class Subscription extends Model
     {
         return $this->belongsTo('App\User');
     }
+    public function child()
+    {
+        return $this->belongsTo('App\User');
+    }
 
     public function pack()
     {

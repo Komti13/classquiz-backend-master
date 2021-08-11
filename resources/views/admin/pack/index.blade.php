@@ -104,7 +104,7 @@
                         return `<div class="btn-group">
                                     <a class="btn btn-mini btn-white"
                                        href="/packs/${row.id}/edit">Edit</a>
-                                    <button class="btn btn-mini btn-white dropdown-toggle" data-toggle="dropdown">
+                                      <button class="btn btn-mini btn-white dropdown-toggle" data-toggle="dropdown">
                                         <span class="caret"></span></button>
                                     <ul class="dropdown-menu">
                                         <li>

@@ -10,6 +10,9 @@
 | contains the "web" middleware group. Now create something great!
 |
 */
+
+use App\Http\Controllers\Admin\LogisticController;
+
 Route::group(['namespace' => 'Admin', 'middleware' => 'admin'], function () {
     Route::get('/', 'DashboardController@dashboard')->name('dashboard');
     Route::resource('admins', 'AdminController')->except('show');
@@ -67,23 +70,33 @@ Route::group(['namespace' => 'Admin', 'middleware' => 'admin'], function () {
     // Route::resource('logistics', 'LogisticController');
     // Route::get('/logistics', 'LogisticController@index')->name('logistics');
    
-Route::group(['prefix' => 'logistics/'], function () {
+    Route::group(['prefix' => 'logistics/'], function () {
+        Route::post('/{source}', 'LogisticController@store')->name('logistics.store');
         Route::get('/', 'LogisticController@index')->name('logistics');
         Route::get('/create', 'LogisticController@create')->name('logistics.create');
+        Route::get('/editform/{id}', 'LogisticController@editForm');
+        Route::get('/edit/{id}', 'LogisticController@edit')->name('logistics.edit');
+        Route::post('/update/{id}/{source}', 'LogisticController@update')->name('logistics.update');
+        Route::get('/delete/{id}', 'LogisticController@destroy')->name('logistics.destroy');
+        Route::get('/loadata', 'LogisticController@dataSheets')->name('logistics.sheets');
+       
 
-
+        Route::get('/pdf/{type}/{id}', 'LogisticController@createPDF')->name('pdf');
         Route::get('/form', function(){
-            return view('admin.logistics.form_template');
+            return view('admin.logistics.create.form_template');
         })->name('form');
-        // Route::post('/first','LogisticController@store1' )->name('first');
-        // Route::post('/second','LogisticController@store2' )->name('second');
-        // Route::post('/third','LogisticController@store3' )->name('third');
 
-        Route::post('/{source}', 'LogisticController@store')->name('logistics.store');
-    //     Route::get('/{source}/edit', 'LogisticController@edit')->name('users.edit');
-    //     Route::patch('/{source}', 'LogisticController@update')->name('sources.update');
-    //     Route::delete('/{source}', 'LogisticController@destroy')->name('sources.destroy');
-        // Route::get('/{source}', 'LogisticController@show')->name('sources.show');
+
+        // Route::post('/pdf', 'LogisticController@createPDF');
+
+
+
+        Route::get('/ticket', function(){
+            return view('admin.logistics.test');
+        });
+        Route::get('/construction', function(){
+            return view('admin.logistics.construction');
+        });
     });
 
 

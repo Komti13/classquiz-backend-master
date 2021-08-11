@@ -13,10 +13,10 @@
     <link rel="stylesheet" href="https://cdn.datatables.net/select/1.3.0/css/select.dataTables.min.css" />
     <style>
         table,
-        #th1,#th2 {
+        #th1,
+        #th2 {
             text-align: center
         }
-        
 
     </style>
     <!-- END PLUGIN CSS -->
@@ -26,23 +26,35 @@
         <div class="span12">
             <div class="grid simple ">
                 <div class="grid-title">
-                    <h4><span class="semi-bold">Logistics</span></h4>
-                    <div class="tools">
-                        <a href="javascript:;" class="collapse"></a>
-                        <a href="#grid-config" data-toggle="modal" class="config"></a>
-                        <a href="javascript:;" class="reload"></a>
-                        <a href="javascript:;" class="remove"></a>
+                    <div class="d-flex justify-content-around">
+                        <h4><span class="semi-bold col">Logistics</span></h4>
+                        <button onclick="authenticate().then(loadClient)" class="btn btn-warning">load google sheet</button>
+                        <button onclick="execute()" class="btn btn-danger"> execute</button>
+                        {{-- <button class="btn btn-danger col" id="sheet" style="" onclick="sheet()">insert
+                            sheet</button> --}}
+                            <div class="tools">
+                                <a href="javascript:;" class="collapse"></a>
+                                <a href="#grid-config" data-toggle="modal" class="config"></a>
+                                <a href="javascript:;" class="reload"></a>
+                                <a href="javascript:;" class="remove"></a>
+                            </div>
                     </div>
                 </div>
-                <div class="grid-body" >
+                <div class="grid-body">
+                    <div class="col-md-12 text-center" id="pdf">
+                        <a name='code' class="btn btn-primary print" target="_blank">Print Code</a>
+                        <a name='ticket' class="btn btn-primary print" target="_blank">Print Ticket</a>
+
+                    </div>
                     <table class="table" id="example5">
                         <thead>
                             <tr>
                                 <th></th>
-                                <th id="th1">N°</th>
-                                <th id="th1">#ID</th>
-                                <th id="th1"> Parent Name</th>
+                                <th id="th1">Parent #ID</th>
+                                <th id="th1">Parent Name</th>
                                 <th id="th1">Phone</th>
+                                <th id="th1">Child #ID</th>
+                                <th id="th1">Child Name</th>
                                 <th id="th1">Child Level</th>
                                 <th id="th1" class="date">Creation Date</th>
                                 <th id="th1">Source</th>
@@ -88,45 +100,93 @@
     <script src="https://cdn.datatables.net/select/1.3.0/js/dataTables.select.min.js"></script>
 
     <!-- END JAVASCRIPTS -->
+    <script src="https://apis.google.com/js/api.js"></script>
+    <script>
+      /**
+       * Sample JavaScript code for sheets.spreadsheets.values.get
+       * See instructions for running APIs Explorer code samples locally:
+       * https://developers.google.com/explorer-help/guides/code_samples#javascript
+       */
+    
+      function authenticate() {
+        return gapi.auth2.getAuthInstance()
+            .signIn({scope: "https://www.googleapis.com/auth/drive https://www.googleapis.com/auth/drive.file https://www.googleapis.com/auth/drive.readonly https://www.googleapis.com/auth/spreadsheets https://www.googleapis.com/auth/spreadsheets.readonly"})
+            .then(function() { console.log("Sign-in successful"); },
+                  function(err) { console.error("Error signing in", err); });
+      }
+      function loadClient() {
+        gapi.client.setApiKey("AIzaSyDtQ8wRBDNKRM6abJUo319k8oFycGw87xo");
+        return gapi.client.load("https://sheets.googleapis.com/$discovery/rest?version=v4")
+            .then(function() { console.log("GAPI client loaded for API"); },
+                  function(err) { console.error("Error loading GAPI client for API", err); });
+      }
+      // Make sure the client is loaded and sign-in is complete before calling this method.
+      function execute() {
+        return gapi.client.sheets.spreadsheets.values.get({
+          "spreadsheetId": "13TTHFqLz_pwiDo_4Kw6UeqlQ9kHFvZcCdWPOJDVURwY",
+          "range": "Calls!A2:AD27",
+          "dateTimeRenderOption": "FORMATTED_STRING",
+          "majorDimension": "ROWS",
+          "valueRenderOption": "FORMATTED_VALUE",
+          "alt": "json",
+          "prettyPrint": true
+        })
+            .then(function(response) {
+                    // Handle the results here (response.result has the parsed body).
+                    console.log("Response", response);
+                  },
+                  function(err) { console.error("Execute error", err); });
+      }
+      gapi.load("client:auth2", function() {
+        gapi.auth2.init({client_id: "1071080155285-j31dj79gh2um4h3dnjnaciov4rgnmcke.apps.googleusercontent.com"});
+      });
+    </script>
     <script type="text/javascript">
         $(document).ready(function() {
             $('#example5 thead tr ').clone(true).appendTo('#example5 thead');
-
-            $('#example5 thead tr:eq(1) #th1').each(function(i) {
-                var title = $(this).text();
-                $(this).html('<input type="text" placeholder="Search ' + title + '" />');
-                $('input', this).on('keyup change', function() {
-                    if (table.column(i +1).search() !== this.value) {
-                        console.log(table.column(i+1).search());
-                        console.log(this.value);
-
-                        table
-                            .column(i +1)
-                            .search(this.value)
-                            .draw();
-                    }
-                });
-            });
-            $('#example5 thead tr:eq(1) #th2').each(function(i) {
+            $('#example5 thead tr:eq(1) th').each(function(i) {
                 var title = $(this).text();
                 $(this).html(
-                    '<div style="width :150px">----</div>'
+                    '<div style="width :150px"></div>'
                 );
-
-
             });
-            $('#example5 thead tr:eq(1) .date').each(function(i) {
-                var title = $(this).text();
-                $(this).html('<input type="date" placeholder="Search ' + title + '" />');
+            /////*******************Search Inputs*************/////////////////
+            // $('#example5 thead tr ').clone(true).appendTo('#example5 thead');
 
-                $('input', this).on('keyup change', function() {
-                    if (table.column(i + 1).search() !== this.value) {
-                        table.column(i + 1).search(this.value).draw();
-                    }
+            // $('#example5 thead tr:eq(1) #th1').each(function(i) {
+            //     var title = $(this).text();
+            //     $(this).html('<input type="text" placeholder="Search ' + title + '" />');
+            //     $('input', this).on('keyup change', function() {
+            //         if (table.column(i + 1).search() !== this.value) {
+            //             console.log(table.column(i + 1).search());
+            //             console.log(this.value);
 
-                });
-            });
-           var packName,num=1;
+            //             table
+            //                 .column(i + 1)
+            //                 .search(this.value)
+            //                 .draw();
+            //         }
+            //     });
+            // });
+            // $('#example5 thead tr:eq(1) #th2').each(function(i) {
+            //     var title = $(this).text();
+            //     $(this).html(
+            //         '<div style="width :150px">----</div>'
+            //     );
+
+
+            // });
+            // $('#example5 thead tr:eq(1) .date').each(function(i) {
+            //     var title = $(this).text();
+            //     $(this).html('<input type="date" placeholder="Search ' + title + '" />');
+
+            //     $('input', this).on('keyup change', function() {
+            //         if (table.column(i + 1).search() !== this.value) {
+            //             table.column(i + 1).search(this.value).draw();
+            //         }
+
+            //     });
+            // });
             var table = $('#example5').DataTable({
                 processing: true,
                 serverSide: true,
@@ -140,18 +200,10 @@
                         defaultContent: ''
                     },
                     {
-                        data: num,
-                        name:num,
-                        "render": function(data, type, row) {
-                                return num++;
-                            
-                        }
-                    },
-                    {
                         orderable: false,
-                        searchable:false,
+                        searchable: false,
                         data: 'user.id',
-                        name:'user.id',
+                        name: 'user.id',
                         "render": function(data, type, row) {
                             if (data == null) {
                                 return '----';
@@ -162,7 +214,7 @@
                     },
                     {
                         data: 'user.name',
-                        name:'user.name',
+                        name: 'user.name',
                         "render": function(data, type, row) {
                             if (data == null) {
                                 return '----';
@@ -173,7 +225,19 @@
                     },
                     {
                         data: 'user.phone',
-                        name:'user.phone',
+                        name: 'user.phone',
+                        "render": function(data, type, row) {
+                            if (row.user.phone2 == null && data == null) {
+                                return '----';
+                            } else if (row.user.phone2 == null) {
+                                return data;
+                            } else {
+                                return data + '/' + row.user.phone2;
+                            }
+                        }
+                    },
+                    {
+                        data: 'child.id',
                         "render": function(data, type, row) {
                             if (data == null) {
                                 return '----';
@@ -181,6 +245,17 @@
                                 return data;
                             }
                         }
+
+                    }, {
+                        data: 'child.name',
+                        "render": function(data, type, row) {
+                            if (data == null) {
+                                return '----';
+                            } else {
+                                return data;
+                            }
+                        }
+
                     },
                     {
                         data: 'pack.level.name',
@@ -208,7 +283,7 @@
                     {
                         // searchable: false,
                         // orderable: false,
-                        data: 'user.usercalls.sales_info.source.type',
+                        data: 'user.usercalls.sales_info.source.source',
                         "render": function(data, type, row) {
                             if (data == null) {
                                 return '----';
@@ -272,10 +347,9 @@
                     {
                         // searchable: false,
                         // orderable: false,
-                        data: 'payment.payment_method.name',
+                        data: 'payment.payment_method.paymethod',
                         "render": function(data, type, row) {
                             if (data == null) {
-
                                 return '----';
                             } else {
                                 return data;
@@ -301,7 +375,6 @@
                             if (data == null) {
                                 return '----';
                             } else {
-                                packName=data;
                                 return data;
                             }
                         }
@@ -309,12 +382,24 @@
                     {
                         // searchable: false,
                         // orderable: false,
-                        data: 'pack.pack_type.name'
+                        data: 'pack.pack_type.name',
+                        "render": function(data, type, row) {
+                            if (data == null) {
+                                return '----';
+                            } else {
+                                return data;
+                            }
+                        }
                     },
                     {
-                        // searchable: false,
-                        // orderable: false,
-                        data: 'pack.price'
+                        data: 'pack.price',
+                        "render": function(data, type, row) {
+                            if (data == null) {
+                                return '----';
+                            } else {
+                                return data;
+                            }
+                        }
                     },
                     {
                         // searchable: false,
@@ -333,14 +418,11 @@
                         data: 'token.token',
                         "render": function(data, type, row) {
                             if (data == null) {
-                                
+
                                 return '----';
                             } else {
-                                if (packName=='اشتراك السنة الحالية و السنة المقبلة') {
-                                    return data+'*';
-                                }
-                                else return data;
-                                
+                                return data;
+
                             }
                         }
                     },
@@ -373,23 +455,14 @@
                         // orderable: false,
                         // searchable: false,
                         render: function(data, type, row, meta) {
-                            return `<div class="btn-group">
-                                    <a class="btn btn-mini btn-white"
-                                       href="/packs/${row.id}/edit">Edit</a>
-                                    <button class="btn btn-mini btn-white dropdown-toggle" data-toggle="dropdown">
-                                        <span class="caret"></span></button>
-                                    <ul class="dropdown-menu">
-                                        <li>
-                                            <a href="javascript:;" data-id="${row.id}" class="delete">Delete</a>
-                                        </li>
-                                    </ul>
-                                </div>`;
+                            return `<div class="btn-group"> <a class="btn btn-mini btn-white" href="/logistics/editform/${row.id}" style="margin-right:10px">Edit</a>
+                                <a class="btn btn-mini btn-danger" href="/logistics/delete/${row.id}">Delete</a> </div>`;
                         },
                     },
                 ],
                 select: {
                     style: 'multi',
-                    selector: 'tr'
+                    selector: "tr"
                 },
                 "sDom": "<'row'<'col-md-6'l <'toolbar'>><'col-md-6'f>r>t<'row'<'col-md-12'p i>>",
                 'aaSorting': [
@@ -400,23 +473,66 @@
                     "sInfo": "Showing <b>_START_ to _END_</b> of _TOTAL_ entries"
                 },
             });
+
+
+
             // Search bar
             $("#example5_filter").hide();
+
+
+            $('.print').click(function() {
+                type = $(this).attr('name')
+                if (table.rows({
+                        selected: true
+                    }).count() == 0) {
+                    alert('please select a column or more')
+                } else {
+                    var len = table.rows({
+                        selected: true
+                    }).count();
+                    // console.log(len);
+                    for (let i = 0; i < len; i++) {
+                        var id = table.rows({
+                            selected: true
+                        }).data()[i].id;
+                        var userid = table.rows({
+                            selected: true
+                        }).data()[i].user.id;
+                        var token = table.rows({
+                            selected: true
+                        }).data()[i].token.token;
+                        var url = "{{ route('pdf', [':type', ':id']) }}";
+                        url = url.replace(':type', type);
+                        url = url.replace(':id', id);
+                        var xhr = new XMLHttpRequest();
+                        xhr.open('GET', url, true);
+                        xhr.responseType = 'blob';
+
+                        xhr.onload = function(e) {
+                            if (this['status'] == 200) {
+                                var blob = new Blob([this['response']], {
+                                    type: 'application/pdf'
+                                });
+                                var link = document.createElement('a');
+                                link.href = window.URL.createObjectURL(blob);
+                                link.download = type + table.rows({
+                                    selected: true
+                                }).data()[i].user.id + ".pdf";
+                                link.click();
+                            }
+                        };
+
+                        xhr.send();
+
+                    }
+                }
+
+
+            });
             $("div.toolbar").html(
                 '<div class="table-tools-actions"><a class="btn btn-primary" href="{{ route('form') }}" style="margin-left:12px" id="test2">Add</a></div>'
             );
 
-            $(document).on('click', '.delete', function(e) {
-                const id = $(this).data('id');
-                if (confirm('Are you sure?')) {
-                    $.post('/packs/' + id, {
-                        _method: 'DELETE',
-                        _token: $('meta[name="csrf-token"]').attr('content')
-                    }, function() {
-                        location.reload();
-                    });
-                }
-            });
         });
     </script>
 @endsection

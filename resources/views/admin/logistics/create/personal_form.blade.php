@@ -2,7 +2,6 @@
     <div class="span12">
         {{-- About children --}}
         {!! Form::open(['route' => ['logistics.store', 'source' => 'third']]) !!}
-
         @for ($i = 0; $i < $nbchild; $i++)
 
             <div class="grid simple">
@@ -156,7 +155,7 @@
     <div class="grid-body ">
         <div class="form-group">
             {!! Form::label('payment', 'Payment Methode') !!}
-            {!! Form::select('payment', ['---', $methodes], null, ['id' => 'methode']) !!}
+            {!! Form::select('paymethod', ['---', $methodes], null, ['id' => 'methode']) !!}
         </div>
         <div class="form-group">
             {!! Form::label('amount', 'Amount') !!}
@@ -218,12 +217,12 @@
         @for ($i = 0; $i < $nbchild; $i++)
 
             <div class="form-group">
-                <h4>Tokens For Child {{ $i }}</h4>
+                <h4>Tokens For Child {{ $i+1 }}</h4>
                 {!! Form::label('label', 'Current Year Token ') !!}
                 {!! Form::text('current', '', ['class' => 'form-control', 'placeholder' => 'token for this year', 'name' => 'current' . $i, 'id' => 'current' . $i]) !!}
                 <div id="tokeen<?php echo $i; ?>" class="tokeen">
-                    {!! Form::label('label', 'Next Year Token ', ['id' => 'label']) !!}
-                    {!! Form::text('next', '', ['class' => 'form-control next', 'placeholder' => 'token for next year', 'name' => 'next' . $i, 'id' => 'next' . $i]) !!}
+                    {!! Form::label('label', 'Next Year Token ') !!}
+                    {!! Form::text('next', '', ['class' => 'form-control', 'placeholder' => 'token for next year', 'name' => 'next' . $i, 'id' => 'Next' . $i]) !!}
                 </div>
                 <script>
                     $(document).ready(function() {
@@ -288,6 +287,7 @@
                 $('#tokeen' + z).hide();
                 $("#pack" + z + " option").remove().end();
                 $("#pack" + z).val(null).trigger('change');
+               
                 for (let i = 0; i < packs.length; i++) {
                     if (packs[i].level_id == $(this).val()) {
                         var option = new Option(packs[i].name, packs[i].id, false, false);
@@ -295,6 +295,8 @@
                     }
 
                 }
+                var option = new Option("---",null, false, false);
+                        $packs.append(option);
 
                 // $('.level > div > input').prop("disabled", true);
                 // $('.level').hide();
@@ -328,14 +330,20 @@
                         var selectVal = $("#pack" + z + " option:selected").html();
                         if (selectVal === 'اشتراك السنة الحالية و السنة المقبلة') {
                             $('#tokeen' + z).show();
+                            
                             $.ajax({
                                 type: 'GET',
                                 url: '{{ Route('tokengen') }}',
                                 success: function(data) {
-                                    $('#next' + z).val(data)
+                            // console.log(z, data)
+
+                                    $('#Next' + z).val(data)
                                 }
                             });
 
+                        }
+                        else{
+                            $('#tokeen' + z).hide();
                         }
                     })
             })

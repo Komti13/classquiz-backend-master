@@ -31,21 +31,21 @@ class LogisticController extends Controller
     public function index()
     {
 
-        // $calls = Subscription::with('user.level', 'user.country', 'user.usercalls','user.usercalls.userStatus', 'user.usercalls.salesInfo', 'user.usercalls.salesInfo.salesManager', 'user.usercalls.salesInfo.source', 'user.usercalls.salesInfo.ad', 'payment', 'payment.paymentMethod', 'payment.delivery')->paginate();
-        //     $calls = Subscription::with( 'user.usercalls', 'user.usercalls.userStatus', 'user.usercalls.salesInfo', 'user.usercalls.salesInfo.salesManager', 'user.usercalls.salesInfo.source', 'user.usercalls.salesInfo.ad', 'pack.packType','pack.level', 'payment', 'payment.paymentMethod', 'payment.delivery')->paginate();
+        $calls = Subscription::orderBy('id', 'DESC')->with('user.usercalls.userStatus', 'user.usercalls.salesInfo.source', 'user.usercalls.salesInfo.ad', 'pack.packType', 'pack.level', 'payment.paymentMethod', 'payment.delivery','child')->paginate();
+            // $calls = Subscription::where('id',9002)->with('user.usercalls.sms')->get();
        
-        // return SubResource::collection($calls);
-        $packs = Pack::select([
-             'id', 'name', 'level_id','price'
-        ])->get();
-        $promo = PackPromotion::select([
-            'id', 'pack_id', 'value'
-       ])->get();
+        return SubResource::collection($calls);
+    //     $packs = Pack::select([
+    //          'id', 'name', 'level_id','price'
+    //     ])->get();
+    //     $promo = PackPromotion::select([
+    //         'id', 'pack_id', 'value'
+    //    ])->get();
 
-        return response()->json([
-            'packs' => $packs,
-            'promo' => $promo,
-        ]);
+    //     return response()->json([
+    //         'packs' => $packs,
+    //         'promo' => $promo,
+    //     ]);
     }
 
     /**

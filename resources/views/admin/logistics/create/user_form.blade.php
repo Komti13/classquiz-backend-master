@@ -37,15 +37,15 @@
 
                 <div class="form-group">
                     {!! Form::label('city_id', 'City') !!}
-                    {!! Form::select('city_id', $cities, null) !!}
+                    {!! Form::select('city_id', $cities, null, ['placeholder' => 'Choose City']) !!}
                 </div>
                 <div class="form-group">
                     {!! Form::label('country_id', 'Country') !!}
-                    {!! Form::select('country_id', $countries, null) !!}
+                    {!! Form::select('country_id', $countries, null, ['placeholder' => 'Choose Country']) !!}
                 </div>
                 <div class="form-group">
                     {!! Form::label('children', 'Number of Children') !!}
-                    {!! Form::number('children', null, ['class' => 'form-control', 'placeholder' => 0]) !!}
+                    {!! Form::number('nb_children', null, ['class' => 'form-control', 'placeholder' => 0]) !!}
                 </div>
                 <div class="text-right">
                     <br>

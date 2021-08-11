@@ -25,7 +25,7 @@ class UserCall extends Model
     }
     public function sms()
     {
-        return $this->hasMany('App\Sms');
+        return $this->belongsTo('App\Sms');
     }
     
     
