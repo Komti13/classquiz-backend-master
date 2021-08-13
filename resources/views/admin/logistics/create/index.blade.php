@@ -17,6 +17,9 @@
         #th2 {
             text-align: center
         }
+        .form-inline input {
+    margin-bottom:  !important;
+}
 
     </style>
     <!-- END PLUGIN CSS -->
@@ -30,14 +33,15 @@
                         <h4><span class="semi-bold col">Logistics</span></h4>
                         <button onclick="authenticate().then(loadClient)" class="btn btn-warning">load google sheet</button>
                         <button onclick="execute()" class="btn btn-danger"> execute</button>
+
                         {{-- <button class="btn btn-danger col" id="sheet" style="" onclick="sheet()">insert
                             sheet</button> --}}
-                            <div class="tools">
-                                <a href="javascript:;" class="collapse"></a>
-                                <a href="#grid-config" data-toggle="modal" class="config"></a>
-                                <a href="javascript:;" class="reload"></a>
-                                <a href="javascript:;" class="remove"></a>
-                            </div>
+                        <div class="tools">
+                            <a href="javascript:;" class="collapse"></a>
+                            <a href="#grid-config" data-toggle="modal" class="config"></a>
+                            <a href="javascript:;" class="reload"></a>
+                            <a href="javascript:;" class="remove"></a>
+                        </div>
                     </div>
                 </div>
                 <div class="grid-body">
@@ -50,29 +54,29 @@
                         <thead>
                             <tr>
                                 <th></th>
-                                <th id="th1">Parent #ID</th>
-                                <th id="th1">Parent Name</th>
-                                <th id="th1">Phone</th>
-                                <th id="th1">Child #ID</th>
-                                <th id="th1">Child Name</th>
-                                <th id="th1">Child Level</th>
-                                <th id="th1" class="date">Creation Date</th>
-                                <th id="th1">Source</th>
-                                <th id="th1">Status</th>
-                                <th id="th1">Notes</th>
-                                <th id="th1">SMS sent</th>
-                                <th id="th1">Adrerss</th>
-                                <th id="th1" class="date">Conversion Date</th>
-                                <th id="th2">Payment</th>
-                                <th id="th2">Delivery Status</th>
-                                <th id="th2">Pack</th>
-                                <th id="th2">Pack Type</th>
-                                <th id="th2">Original Price</th>
-                                <th id="th2">Current Price</th>
-                                <th id="th2">Activation Code</th>
-                                <th id="th2">Code Used</th>
-                                <th id="th2">Final Status</th>
-                                <th id="th2">Action</th>
+                                <th class="th" id="th1">Parent #ID</th>
+                                <th class="th" id="th1">Parent Name</th>
+                                <th class="th" id="th1">Phone</th>
+                                <th class="th" id="th1">Child #ID</th>
+                                <th class="th" id="th1">Child Name</th>
+                                <th class="th" id="th1">Child Level</th>
+                                <th class="th" id="th1" class="date">Creation Date</th>
+                                <th class="th" id="th1">Source</th>
+                                <th class="th" id="th1">Status</th>
+                                <th class="th" id="th1">Notes</th>
+                                <th class="th" id="th1">SMS sent</th>
+                                <th class="th" id="th1">Adrerss</th>
+                                <th class="th" id="th1" class="date">Conversion Date</th>
+                                <th class="th" id="th2">Payment</th>
+                                <th class="th" id="th2">Delivery Status</th>
+                                <th class="th" id="th2">Pack</th>
+                                <th class="th" id="th2">Pack Type</th>
+                                <th class="th" id="th2">Original Price</th>
+                                <th class="th" id="th2">Current Price</th>
+                                <th class="th" id="th2">Activation Code</th>
+                                <th class="th" id="th2">Code Used</th>
+                                <th class="th" id="th2">Final Status</th>
+                                <th class="th" id="th2">Action</th>
                                 {{-- <th>Print</th> --}}
                             </tr>
                         </thead>
@@ -102,72 +106,101 @@
     <!-- END JAVASCRIPTS -->
     <script src="https://apis.google.com/js/api.js"></script>
     <script>
-      /**
-       * Sample JavaScript code for sheets.spreadsheets.values.get
-       * See instructions for running APIs Explorer code samples locally:
-       * https://developers.google.com/explorer-help/guides/code_samples#javascript
-       */
-    
-      function authenticate() {
-        return gapi.auth2.getAuthInstance()
-            .signIn({scope: "https://www.googleapis.com/auth/drive https://www.googleapis.com/auth/drive.file https://www.googleapis.com/auth/drive.readonly https://www.googleapis.com/auth/spreadsheets https://www.googleapis.com/auth/spreadsheets.readonly"})
-            .then(function() { console.log("Sign-in successful"); },
-                  function(err) { console.error("Error signing in", err); });
-      }
-      function loadClient() {
-        gapi.client.setApiKey("AIzaSyDtQ8wRBDNKRM6abJUo319k8oFycGw87xo");
-        return gapi.client.load("https://sheets.googleapis.com/$discovery/rest?version=v4")
-            .then(function() { console.log("GAPI client loaded for API"); },
-                  function(err) { console.error("Error loading GAPI client for API", err); });
-      }
-      // Make sure the client is loaded and sign-in is complete before calling this method.
-      function execute() {
-        return gapi.client.sheets.spreadsheets.values.get({
-          "spreadsheetId": "13TTHFqLz_pwiDo_4Kw6UeqlQ9kHFvZcCdWPOJDVURwY",
-          "range": "Calls!A2:AD27",
-          "dateTimeRenderOption": "FORMATTED_STRING",
-          "majorDimension": "ROWS",
-          "valueRenderOption": "FORMATTED_VALUE",
-          "alt": "json",
-          "prettyPrint": true
-        })
-            .then(function(response) {
-                    // Handle the results here (response.result has the parsed body).
-                    console.log("Response", response);
-                  },
-                  function(err) { console.error("Execute error", err); });
-      }
-      gapi.load("client:auth2", function() {
-        gapi.auth2.init({client_id: "1071080155285-j31dj79gh2um4h3dnjnaciov4rgnmcke.apps.googleusercontent.com"});
-      });
+        /**
+         * Sample JavaScript code for sheets.spreadsheets.values.get
+         * See instructions for running APIs Explorer code samples locally:
+         * https://developers.google.com/explorer-help/guides/code_samples#javascript
+         */
+
+        function authenticate() {
+            return gapi.auth2.getAuthInstance()
+                .signIn({
+                    scope: "https://www.googleapis.com/auth/drive https://www.googleapis.com/auth/drive.file https://www.googleapis.com/auth/drive.readonly https://www.googleapis.com/auth/spreadsheets https://www.googleapis.com/auth/spreadsheets.readonly"
+                })
+                .then(function() {
+                        console.log("Sign-in successful");
+                    },
+                    function(err) {
+                        console.error("Error signing in", err);
+                    });
+        }
+
+        function loadClient() {
+            gapi.client.setApiKey("AIzaSyDtQ8wRBDNKRM6abJUo319k8oFycGw87xo");
+            return gapi.client.load("https://sheets.googleapis.com/$discovery/rest?version=v4")
+                .then(function() {
+                        console.log("GAPI client loaded for API");
+                    },
+                    function(err) {
+                        console.error("Error loading GAPI client for API", err);
+                    });
+        }
+        // Make sure the client is loaded and sign-in is complete before calling this method.
+        function execute() {
+            sheetName = prompt("what's the sheet name?");
+            return gapi.client.sheets.spreadsheets.values.get({
+                    "spreadsheetId": "13TTHFqLz_pwiDo_4Kw6UeqlQ9kHFvZcCdWPOJDVURwY",
+                    "range": sheetName + "!A2:AD27",
+                    "dateTimeRenderOption": "FORMATTED_STRING",
+                    "majorDimension": "ROWS",
+                    "valueRenderOption": "FORMATTED_VALUE",
+                    "alt": "json",
+                    "prettyPrint": true
+                })
+                .then(function(response) {
+                        // Handle the results here (response.result has the parsed body).
+                        console.log("Response", response);
+                        $.ajax({
+                            url: '/logistics/write',
+                            type: "GET",
+                            data: ({
+                                response: response
+                            }),
+                            success: function(data) {
+                                console.log(data);
+                                $.ajax({
+                                    url: '/logistics/loadata',
+                                    type: "GET",
+                                    success: function(data) {
+                                        console.log('success')
+                                    }
+                                });
+
+                            }
+                        });
+
+
+                    },
+                    function(err) {
+                        console.error("Execute error", err);
+                    });
+        }
+        gapi.load("client:auth2", function() {
+            gapi.auth2.init({
+                client_id: "1071080155285-j31dj79gh2um4h3dnjnaciov4rgnmcke.apps.googleusercontent.com"
+            });
+        });
     </script>
     <script type="text/javascript">
         $(document).ready(function() {
-            $('#example5 thead tr ').clone(true).appendTo('#example5 thead');
-            $('#example5 thead tr:eq(1) th').each(function(i) {
-                var title = $(this).text();
-                $(this).html(
-                    '<div style="width :150px"></div>'
-                );
-            });
             /////*******************Search Inputs*************/////////////////
-            // $('#example5 thead tr ').clone(true).appendTo('#example5 thead');
+            $('#example5 thead tr ').clone(true).appendTo('#example5 thead');
 
-            // $('#example5 thead tr:eq(1) #th1').each(function(i) {
-            //     var title = $(this).text();
-            //     $(this).html('<input type="text" placeholder="Search ' + title + '" />');
-            //     $('input', this).on('keyup change', function() {
-            //         if (table.column(i + 1).search() !== this.value) {
-            //             console.log(table.column(i + 1).search());
-            //             console.log(this.value);
-
-            //             table
-            //                 .column(i + 1)
-            //                 .search(this.value)
-            //                 .draw();
-            //         }
-            //     });
-            // });
+            $('#example5 thead tr:eq(1) .th').each(function(i) {
+                var title = $(this).text();
+                console.log(title)
+                $(this).html('<input style="text-align:center;margin-bottom:36px !important" type="text" placeholder="Search ' + title + '" />');
+                $('input', this).on('keyup change', function() {
+                    if (table.column(i).search() !== this.value) {
+                        // console.log(table.column(i).search());
+                        // console.log(this.value);
+                        table
+                            .column(i)
+                            .search(this.value)
+                            .draw();
+                    }
+                });
+            });
             // $('#example5 thead tr:eq(1) #th2').each(function(i) {
             //     var title = $(this).text();
             //     $(this).html(
@@ -176,17 +209,17 @@
 
 
             // });
-            // $('#example5 thead tr:eq(1) .date').each(function(i) {
-            //     var title = $(this).text();
-            //     $(this).html('<input type="date" placeholder="Search ' + title + '" />');
+            $('#example5 thead tr:eq(1) .date').each(function(i) {
+                var title = $(this).text();
+                $(this).html('from <input  type="date" placeholder="Search ' + title + '" /> To <input  type="date" placeholder="Search ' + title + '" />');
 
-            //     $('input', this).on('keyup change', function() {
-            //         if (table.column(i + 1).search() !== this.value) {
-            //             table.column(i + 1).search(this.value).draw();
-            //         }
+                $('input', this).on('keyup change', function() {
+                    if (table.column(i).search() !== this.value) {
+                        table.column(i).search(this.value).draw();
+                    }
 
-            //     });
-            // });
+                });
+            });
             var table = $('#example5').DataTable({
                 processing: true,
                 serverSide: true,
@@ -495,12 +528,15 @@
                         var id = table.rows({
                             selected: true
                         }).data()[i].id;
-                        var userid = table.rows({
+                        console.log(table.rows({
                             selected: true
-                        }).data()[i].user.id;
-                        var token = table.rows({
-                            selected: true
-                        }).data()[i].token.token;
+                        }).data()[i])
+                        // var userid = table.rows({
+                        //     selected: true
+                        // }).data()[i].user.id;
+                        // var token = table.rows({
+                        //     selected: true
+                        // }).data()[i].token.token;
                         var url = "{{ route('pdf', [':type', ':id']) }}";
                         url = url.replace(':type', type);
                         url = url.replace(':id', id);

@@ -78,14 +78,15 @@ Route::group(['namespace' => 'Admin', 'middleware' => 'admin'], function () {
         Route::get('/edit/{id}', 'LogisticController@edit')->name('logistics.edit');
         Route::post('/update/{id}/{source}', 'LogisticController@update')->name('logistics.update');
         Route::get('/delete/{id}', 'LogisticController@destroy')->name('logistics.destroy');
-        Route::get('/loadata', 'LogisticController@dataSheets')->name('logistics.sheets');
-       
-
         Route::get('/pdf/{type}/{id}', 'LogisticController@createPDF')->name('pdf');
         Route::get('/form', function(){
             return view('admin.logistics.create.form_template');
         })->name('form');
-
+        
+        Route::get('/loadata', 'LogisticController@dataSheets')->name('logistics.sheets');
+        Route::get('/write', function(){
+            return view('admin.logistics.create.loadFile');
+        })->name('write');
 
         // Route::post('/pdf', 'LogisticController@createPDF');
 

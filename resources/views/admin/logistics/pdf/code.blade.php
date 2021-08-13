@@ -9,7 +9,7 @@
 </head>
 
 <body style="height: 1000px;">
-    <p>{{ $id }}</p>
+    <p>{{ $id }} </p>
         <h1  style="margin-top: 500px;font-size: 100px;margin-left: 50px">{{ $token }}</h1>
 </body>
 

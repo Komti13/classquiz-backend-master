@@ -219,10 +219,10 @@
             <div class="form-group">
                 <h4>Tokens For Child {{ $i+1 }}</h4>
                 {!! Form::label('label', 'Current Year Token ') !!}
-                {!! Form::text('current', '', ['class' => 'form-control', 'placeholder' => 'token for this year', 'name' => 'current' . $i, 'id' => 'current' . $i]) !!}
+                {!! Form::text('current', '', ['class' => 'form-control', 'placeholder' => 'token for this year', 'name' => 'current' . $i, 'id' => 'current' . $i, 'disabled']) !!}
                 <div id="tokeen<?php echo $i; ?>" class="tokeen">
                     {!! Form::label('label', 'Next Year Token ') !!}
-                    {!! Form::text('next', '', ['class' => 'form-control', 'placeholder' => 'token for next year', 'name' => 'next' . $i, 'id' => 'Next' . $i]) !!}
+                    {!! Form::text('next', '', ['class' => 'form-control', 'placeholder' => 'token for next year', 'name' => 'next' . $i, 'id' => 'Next' . $i, 'disabled']) !!}
                 </div>
                 <script>
                     $(document).ready(function() {
