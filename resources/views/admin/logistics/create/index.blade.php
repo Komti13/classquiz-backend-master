@@ -14,12 +14,14 @@
     <style>
         table,
         #th1,
-        #th2 {
+        #th2,
+        #th3 {
             text-align: center
         }
+
         .form-inline input {
-    margin-bottom:  !important;
-}
+            margin-bottom:  !important;
+        }
 
     </style>
     <!-- END PLUGIN CSS -->
@@ -76,7 +78,7 @@
                                 <th class="th" id="th2">Activation Code</th>
                                 <th class="th" id="th2">Code Used</th>
                                 <th class="th" id="th2">Final Status</th>
-                                <th class="th" id="th2">Action</th>
+                                <th class="th" id="th3">Action</th>
                                 {{-- <th>Print</th> --}}
                             </tr>
                         </thead>
@@ -189,7 +191,9 @@
             $('#example5 thead tr:eq(1) .th').each(function(i) {
                 var title = $(this).text();
                 console.log(title)
-                $(this).html('<input style="text-align:center;margin-bottom:36px !important" type="text" placeholder="Search ' + title + '" />');
+                $(this).html(
+                    '<input style="text-align:center;margin-bottom:36px !important" type="text" placeholder="Search ' +
+                    title + '" />');
                 $('input', this).on('keyup change', function() {
                     if (table.column(i).search() !== this.value) {
                         // console.log(table.column(i).search());
@@ -201,17 +205,16 @@
                     }
                 });
             });
-            // $('#example5 thead tr:eq(1) #th2').each(function(i) {
-            //     var title = $(this).text();
-            //     $(this).html(
-            //         '<div style="width :150px">----</div>'
-            //     );
-
-
-            // });
+            $('#example5 thead tr:eq(1) #th3').each(function(i) {
+                var title = $(this).text();
+                $(this).html(
+                    '<div style="width :150px"></div>'
+                );
+            });
             $('#example5 thead tr:eq(1) .date').each(function(i) {
                 var title = $(this).text();
-                $(this).html('from <input  type="date" placeholder="Search ' + title + '" /> To <input  type="date" placeholder="Search ' + title + '" />');
+                $(this).html('from <input  type="date" placeholder="Search ' + title +
+                    '" /> To <input  type="date" placeholder="Search ' + title + '" />');
 
                 $('input', this).on('keyup change', function() {
                     if (table.column(i).search() !== this.value) {
@@ -391,7 +394,7 @@
                     },
                     {
 
-                        data: 'payment.delivery.delivery_status',
+                        data: 'delivery.delivery_status',
                         "render": function(data, type, row) {
                             if (data == null) {
                                 return '----';
@@ -524,43 +527,43 @@
                         selected: true
                     }).count();
                     // console.log(len);
+                    var ids=[];
                     for (let i = 0; i < len; i++) {
-                        var id = table.rows({
+                        ids[i] = table.rows({
                             selected: true
                         }).data()[i].id;
-                        console.log(table.rows({
-                            selected: true
-                        }).data()[i])
-                        // var userid = table.rows({
-                        //     selected: true
-                        // }).data()[i].user.id;
-                        // var token = table.rows({
-                        //     selected: true
-                        // }).data()[i].token.token;
-                        var url = "{{ route('pdf', [':type', ':id']) }}";
-                        url = url.replace(':type', type);
-                        url = url.replace(':id', id);
-                        var xhr = new XMLHttpRequest();
-                        xhr.open('GET', url, true);
-                        xhr.responseType = 'blob';
-
-                        xhr.onload = function(e) {
-                            if (this['status'] == 200) {
-                                var blob = new Blob([this['response']], {
-                                    type: 'application/pdf'
-                                });
-                                var link = document.createElement('a');
-                                link.href = window.URL.createObjectURL(blob);
-                                link.download = type + table.rows({
-                                    selected: true
-                                }).data()[i].user.id + ".pdf";
-                                link.click();
-                            }
-                        };
-
-                        xhr.send();
-
                     }
+                    // console.log(table.rows({
+                    //     selected: true
+                    // }).data()[i])
+                    // var userid = table.rows({
+                    //     selected: true
+                    // }).data()[i].user.id;
+                    // var token = table.rows({
+                    //     selected: true
+                    // }).data()[i].token.token;
+                    var url = "{{ route('pdf', [':type', ':id']) }}";
+                    url = url.replace(':type', type);
+                    url = url.replace(':id', ids);
+                    var xhr = new XMLHttpRequest();
+                    xhr.open('GET', url, true);
+                    xhr.responseType = 'blob';
+
+                    xhr.onload = function(e) {
+                        if (this['status'] == 200) {
+                            var blob = new Blob([this['response']], {
+                                type: 'application/pdf'
+                            });
+                            var link = document.createElement('a');
+                            link.href = window.URL.createObjectURL(blob);
+                            link.download = type +".pdf";
+                            link.click();
+                        }
+                    };
+
+                    xhr.send();
+
+                    // }
                 }
 
 

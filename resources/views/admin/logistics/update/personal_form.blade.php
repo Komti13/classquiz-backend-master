@@ -308,17 +308,22 @@ if ($payment != null) {
 $deldate = null;
 $delstatus = null;
 $fees = true;
-if ($payment != null) {
-    if ($s->payment->delivery != null) {
-        $deldate = $s->payment->delivery->delivery_date;
-        $delstatus = $s->payment->delivery->delivery_status;
-        $fees = $s->payment->delivery->delivery_fees;
-    } else {
-        $deldate = null;
-        $delstatus = null;
-        $fees = true;
+$yes='';
+$no='';
+
+    if ($s->delivery != null) {
+        $deldate = $s->delivery->delivery_date;
+        $delstatus = $s->delivery->delivery_status;
+        $fees = $s->delivery->delivery_fees;
     }
-}
+    if ($fees) {
+        $yes="active";
+        $no="notActive";
+    }elseif ($fees==false) {
+        $yes="notActive";
+        $no="active";
+
+    }
 
 ?>
 
@@ -339,17 +344,17 @@ if ($payment != null) {
         </div>
         <div class="form-group">
             {!! Form::label('delstatus', 'Delivery Status') !!}
-            {!! Form::select('delstatus', ['Delivery launched' => 'Delivery launched', 'To be confirmed' => 'To be confirmed', 'Cacelled before launch' => 'Cacelled before launch', 'payed (credit card)' => 'payed (credit card)', 'payed(tranfer)' => 'payed(tranfer)', 'payed(Physical C)' => 'payed(Physical C)'], $delstatus, ['id' => 'delstatus', 'placeholder' => 'Choose Delivery Status']) !!}
+            {!! Form::select('delstatus', ['Delivery launched' => 'Delivery launched', 'To be confirmed' => 'To be confirmed', 'Cancelled before launch' => 'Cancelled before launch', 'payed (credit card)' => 'payed (credit card)', 'payed(tranfer)' => 'payed(tranfer)', 'payed(Physical C)' => 'payed(Physical C)'], $delstatus, ['id' => 'delstatus', 'placeholder' => 'Choose Delivery Status']) !!}
         </div>
         <div class="form-group">
             <label for="fees" class="col-sm-4 col-md-4 control-label text-left ">Delivery Fees</label>
             <div class="col-sm-7 col-md-7">
                 <div class="input-group">
                     <div id="radioBtn" class="btn-group">
-                        <a class="btn btn-primary btn-sm active" data-toggle="fees" data-title="true">YES</a>
-                        <a class="btn btn-primary btn-sm notActive" data-toggle="fees" data-title="false">NO</a>
+                        <a class="btn btn-primary btn-sm <?php echo $yes; ?>" data-toggle="fees" data-title="true">YES</a>
+                        <a class="btn btn-primary btn-sm <?php echo $no; ?>" data-toggle="fees" data-title="false">NO</a>
                     </div>
-                    <input type="hidden" name="fees" id="fees" value=<?php echo $fees; ?>>
+                    <input type="hidden" name="fees" id="fees" value="<?php echo $fees; ?>">
                 </div>
             </div>
         </div>

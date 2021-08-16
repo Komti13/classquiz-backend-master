@@ -40,7 +40,7 @@ class LogisticController extends Controller
     public function index()
     {
         if (request()->isXmlHttpRequest()) {
-            $calls = Subscription::orderBy('id', 'DESC')->with('user.usercalls.userStatus', 'user.usercalls.salesInfo.source', 'user.usercalls.salesInfo.ad', 'pack.packType', 'pack.level', 'payment.paymentMethod', 'payment.delivery', 'child');
+            $calls = Subscription::orderBy('id', 'DESC')->with('user.usercalls.userStatus', 'user.usercalls.salesInfo.source', 'user.usercalls.salesInfo.ad', 'pack.packType', 'pack.level', 'payment.paymentMethod', 'delivery', 'child');
             return datatables()->of($calls)->toJson();
         }
 
@@ -118,17 +118,10 @@ class LogisticController extends Controller
             $allpacks = Pack::select([
                 'id', 'name', 'level_id', 'price',
             ])->get();
-
-            // if (request('calltype') == 'Sale') {
-            // $nbchild = Cookie::get('nbchildren');
             return view('admin.logistics.update.personal_form', compact('schools', 'countries', 'levels', 'sources', 'ads', 'methodes', 'payStatus', 'packs', 'promos', 'allpacks', 'id', 'payment', 'sms', 's'));
-            // } else if (request('calltype') == 'Feedback') {
-            //     return view('admin.logistics.update.feedback');
-            // } else {
-            //     return view('admin.logistics.update.techSupport');
-            // }
         }
         if ($source == 'third') {
+            // dd(request()->all());
             $user = User::findOrFail($sub[0]->user->id);
             $user->name = request('name');
             $user->phone = request('phone');
@@ -169,7 +162,6 @@ class LogisticController extends Controller
             $userCall->calltype = request('calltype');
             $userCall->conversation_date = request('conversation_date');
             $userCall->save();
-            // dd(request('namechild') );
             if (request('namechild') != null) {
                 if (trim(request('namechild'), ' ') != '') {
                     if ($sub[0]->child != null) {
@@ -201,6 +193,7 @@ class LogisticController extends Controller
             if (request('pack') == null && trim(request('newchildname'), ' ') != '') {
                 Subscription::destroy($subscription->id);
             }
+            $payment = null;
             if (request('paymethod') > 0) {
                 $payment = Payment::where('subscription_id', $subscription->id)->first();
                 if ($payment == null) {
@@ -218,17 +211,20 @@ class LogisticController extends Controller
                 $history->payment_id = $payment->id;
                 $history->payment_status_id = request('paystatus');
                 $history->save();
-                if (request('delivery_date') != "") {
-                    $delivery = Delivery::where('payment_id', $payment->id)->first();
-                    if ($delivery == null) {
-                        $delivery = new Delivery;
-                    }
-                    $delivery->delivery_date = request('delivery_date');
-                    $delivery->delivery_status = request('delstatus');
-                    $delivery->delivery_fees = request('fees');
-                    $delivery->payment_id = $payment->id;
-                    $delivery->save();
+            }
+            if (request('delivery_date') != "") {
+                $delivery = Delivery::where('subscription_id', $subscription->id)->first();
+                if ($delivery == null) {
+                    $delivery = new Delivery;
                 }
+                $delivery->delivery_date = request('delivery_date');
+                $delivery->delivery_status = request('delstatus');
+                $delivery->delivery_fees = request('fees');
+                if ($payment != null) {
+                    $delivery->payment_id = $payment->id;
+                }
+                $delivery->subscription_id = $subscription->id;
+                $delivery->save();
             }
             // new Child
             if (trim(request('newchildname'), ' ') != '') {
@@ -261,18 +257,16 @@ class LogisticController extends Controller
                 // 
                 foreach ($promos as $promo) {
                     if ($promo->pack_id == (int)request('pack1')) {
-                        // dd($promo->pack_id, (int)request('pack1'));
                         $token->value = $promo->value;
                     }
                 }
-                if ($token->value ==null) {
+                if ($token->value == null) {
                     foreach ($allpacks as $pack) {
                         if ($pack->id == (int)request('pack1')) {
                             $token->value = $pack->price;
                         }
                     }
                 }
-                // $token->value=500;
                 $token->user_id = $user->id;
                 $token->save();
                 $subscription->token_id = $token->id;
@@ -309,7 +303,7 @@ class LogisticController extends Controller
                             $token->value = $promo->value;
                         }
                     }
-                    if ($token->value ==null) {
+                    if ($token->value == null) {
                         foreach ($allpacks as $pack) {
                             if ($pack->id == (int)request('pack1')) {
                                 $token->value = $pack->price;
@@ -336,9 +330,6 @@ class LogisticController extends Controller
                     }
                 }
             }
-
-            // dd($_REQUEST);
-
         }
     }
 
@@ -456,7 +447,7 @@ class LogisticController extends Controller
                                 $current_token->value = $promo->value;
                             }
                         }
-                        if ($current_token->value ==null) {
+                        if ($current_token->value == null) {
                             foreach ($allpacks as $pack) {
                                 if ($pack->id == (int)request('pack' . $i)) {
                                     $current_token->value = $pack->price;
@@ -465,7 +456,6 @@ class LogisticController extends Controller
                         }
                         $current_token->user_id = $user->id;
                         $current_token->save();
-                        // dd($current_token);
                         if (request('next' . $i) != null) {
                             $next_token = new Token;
                             $next_token->token = request('next' . $i) . '*';
@@ -484,6 +474,7 @@ class LogisticController extends Controller
                             $subscription->child_id = $child->id;
                             $subscription->token_id = $next_token->id;
                             $subscription->save();
+                            $payment = null;
                             if (request('paymethod') > 0) {
                                 $payment = new Payment;
                                 $payment->amount = request('amount');
@@ -497,14 +488,18 @@ class LogisticController extends Controller
                                     $history->payment_status_id = request('paystatus');
                                 }
                                 $history->save();
-                                if (request('delivery_date') != "") {
-                                    $delivery = new Delivery;
-                                    $delivery->delivery_date = request('delivery_date');
-                                    $delivery->delivery_status = request('delstatus');
-                                    $delivery->delivery_fees = request('fees');
+                            }
+                            if (request('delivery_date') != "") {
+                                $delivery = new Delivery;
+                                $delivery->delivery_date = request('delivery_date');
+                                $delivery->delivery_status = request('delstatus');
+                                $delivery->delivery_fees = request('fees');
+                                if ($payment != null) {
                                     $delivery->payment_id = $payment->id;
-                                    $delivery->save();
                                 }
+                                $delivery->subscription_id = $subscription->id;
+
+                                $delivery->save();
                             }
                         }
                     }
@@ -545,6 +540,7 @@ class LogisticController extends Controller
                             $delivery->delivery_status = request('delstatus');
                             $delivery->delivery_fees = request('fees');
                             $delivery->payment_id = $payment->id;
+                            $delivery->subscription_id = $subscription->id;
                             $delivery->save();
                         }
                         $test = false;
@@ -556,7 +552,6 @@ class LogisticController extends Controller
                 $subscription->pack_id = 52;
                 $subscription->save();
             }
-            // return request()->all();
         } else
         if ($source == 'feedback') {
             $user = new User;
@@ -607,17 +602,22 @@ class LogisticController extends Controller
             $support->save();
         }
     }
-    public function createPDF($type, $id)
+    public function createPDF($type, $ids)
     {
         if ($type == 'code') {
-            $calls = Subscription::where('id', $id)->get();
-            $call = SubResource::collection($calls);
-            // dd($call[0]->token->token);
-            $userid = $call[0]->user->id;
-            $token = $call[0]->token->token;
-            $tok = substr($token, 0, 9);
-            $pdf = PDF::loadView('admin.logistics.pdf.code', ['token' => $token, 'id' => $userid]);
-            $fileName = 'code' . $tok . '.' . 'pdf';
+            $pages=[];
+            for ($i=0; $i <count(explode(',', $ids)) ; $i++) { 
+                $calls = Subscription::where('id', explode(',', $ids)[$i])->get();
+                $call = SubResource::collection($calls);
+                $userid = $call[0]->user->id;
+                $token = $call[0]->token->token;
+                $pages[$i]['id']=$userid;
+                $pages[$i]['token']=$token;
+
+            }
+            // $tok = substr($token, 0, 9);
+            $pdf = PDF::loadView('admin.logistics.pdf.code', ['pages' => $pages]);
+            $fileName = 'codes.pdf';
             $pdf->save('C:\Users\DELL\Desktop\classquiz-backend-master\storage\pdf' . '\/' . $fileName);
 
             $pdf = 'C:\Users\DELL\Desktop\classquiz-backend-master\storage\pdf' . '\/' . $fileName;
@@ -626,7 +626,7 @@ class LogisticController extends Controller
             );
             return response()->download($pdf, $fileName, $headers)->deleteFileAfterSend(true);
         } else if ($type == 'ticket') {
-            $calls = Subscription::where('id', $id)->get();
+            $calls = Subscription::where('id', $ids)->get();
             $call = SubResource::collection($calls);
             $userid = $call[0]->user->id;
             $pack = $call[0]->pack->name;
@@ -663,213 +663,138 @@ class LogisticController extends Controller
             $time = strtotime($json['values'][$i][3]);
             $date = date('Y-m-d', $time);
             $today = Carbon::today()->format('Y-m-d');
-            if ($today == $date) {
-                $user = new User;
-                if ($json['values'][$i][1] != '') {
-                    $user->name = $json['values'][$i][1];
+            // if ($today == $date) {
+            $user = new User;
+            if ($json['values'][$i][1] != '') {
+                $user->name = $json['values'][$i][1];
+            }
+            if ($json['values'][$i][2] != '') {
+                $user->phone = $json['values'][$i][2];
+            }
+            if ($json['values'][$i][8] != '') {
+                $user->address = $json['values'][$i][8];
+            }
+            $user->country_id = 1;
+            $user->save();
+            $user->roles()->sync(Role::where('name', 'PARENT')->first());
+            $user_call = new UserCall;
+            if ($json['values'][$i][6] != '') {
+                $user_call->notes = $json['values'][$i][6];
+            }
+            if ($json['values'][$i][5] != '') {
+                $user_call->conversation_date = $json['values'][$i][5];
+            }
+            $user_call->calltype = 1;
+            foreach ($status as $key => $value) {
+                if (strtolower($value) == strtolower($json['values'][$i][4])) {
+                    $user_call->user_status_id = $key;
                 }
-                if ($json['values'][$i][2] != '') {
-                    $user->phone = $json['values'][$i][2];
+            }
+            $user_call->user_id = $user->id;
+            $user_call->created_at = $date;
+            $user_call->updated_at = $date;
+
+            $sales_info = new SalesInfo;
+            foreach ($sources as $key => $value) {
+                if (strtolower($value) == strtolower($json['values'][$i][28])) {
+                    $sales_info->source_id = $key;
                 }
-                if ($json['values'][$i][8] != '') {
-                    $user->address = $json['values'][$i][8];
+            }
+            foreach ($ads as $key => $value) {
+                if (strtolower($value) == strtolower($json['values'][$i][29])) {
+                    $sales_info->ad_id = $key;
                 }
-                $user->country_id = 1;
-                $user->save();
-                $user->roles()->sync(Role::where('name', 'PARENT')->first());
-                $user_call = new UserCall;
-                if ($json['values'][$i][6] != '') {
-                    $user_call->notes = $json['values'][$i][6];
+            }
+            $sales_info->sales_manager_id = auth()->guard('admin')->user()->id;
+            $sales_info->save();
+            $user_call->sales_info_id = $sales_info->id;
+            $user_call->save();
+            $subscription = new Subscription;
+            $subscription->pack_id = 52;
+            $current_pack = '';
+            if ($json['values'][$i][12] != '') {
+                switch ($json['values'][$i][12]) {
+                    case 'T3':
+                        $current_pack = 'اشتراك الثلاثي الثالث';
+                        break;
+                    case 'T2':
+                        $current_pack = 'اشتراك الثلاثي الثاني';
+                        break;
+                    case 'AP':
+                        $current_pack = 'اشتراك سنوي';
+                        break;
+                    case '2AP':
+                        $current_pack = 'اشتراك السنة الحالية و السنة المقبلة';
+                        break;
+                    case 'T3+AP':
+                        $current_pack = 'اشتراك الثلاثي الثالث';
+                        break;
+                    case 'T2+T3':
+                        $current_pack = 'اشتراك الثلاثي الثاني و الثالث';
+                        break;
+                    case 'T1':
+                        $current_pack = 'اشتراك الثلاثي الأول';
+                        break;
+                    default:
+                        $current_pack = '';
+                        break;
                 }
-                if ($json['values'][$i][5] != '') {
-                    $user_call->conversation_date = $json['values'][$i][5];
-                }
-                $user_call->calltype = 1;
-                foreach ($status as $key => $value) {
-                    if (strtolower($value) == strtolower($json['values'][$i][4])) {
-                        $user_call->user_status_id = $key;
+            }
+
+            if ($json['values'][$i][10] != '') {
+                $child = new User;
+                $child->name = $json['values'][$i][10];
+                foreach ($levels as $key => $value) {
+                    if (strtolower($value) == strtolower($json['values'][$i][11])) {
+                        $child->level_id = $key;
                     }
                 }
-                $user_call->user_id = $user->id;
-                $user_call->created_at = $date;
-                $user_call->updated_at = $date;
+                $child->save();
+                $child->roles()->sync(Role::where('name', 'STUDENT')->first());
+                $user->students()->sync($child->id);
+                $subscription->child_id = $child->id;
 
-                $sales_info = new SalesInfo;
-                foreach ($sources as $key => $value) {
-                    if (strtolower($value) == strtolower($json['values'][$i][28])) {
-                        $sales_info->source_id = $key;
+                foreach ($packs as $pack) {
+                    if ($pack->name == $current_pack && $pack->level_id == $child->level_id) {
+                        $subscription->pack_id = $pack->id;
                     }
                 }
-                foreach ($ads as $key => $value) {
-                    if (strtolower($value) == strtolower($json['values'][$i][29])) {
-                        $sales_info->ad_id = $key;
-                    }
-                }
-                $sales_info->sales_manager_id = auth()->guard('admin')->user()->id;
-                $sales_info->save();
-                $user_call->sales_info_id = $sales_info->id;
-                $user_call->save();
-                $subscription = new Subscription;
-                $subscription->pack_id = 52;
-                $current_pack = '';
-                if ($json['values'][$i][12] != '') {
-                    switch ($json['values'][$i][12]) {
-                        case 'T3':
-                            $current_pack = 'اشتراك الثلاثي الثالث';
-                            break;
-                        case 'T2':
-                            $current_pack = 'اشتراك الثلاثي الثاني';
-                            break;
-                        case 'AP':
-                            $current_pack = 'اشتراك سنوي';
-                            break;
-                        case '2AP':
-                            $current_pack = 'اشتراك السنة الحالية و السنة المقبلة';
-                            break;
-                        case 'T3+AP':
-                            $current_pack = 'اشتراك الثلاثي الثالث';
-                            break;
-                        case 'T2+T3':
-                            $current_pack = 'اشتراك الثلاثي الثاني و الثالث';
-                            break;
-                        case 'T1':
-                            $current_pack = 'اشتراك الثلاثي الأول';
-                            break;
-                        default:
-                            $current_pack = '';
-                            break;
-                    }
-                }
+            }
+            $subscription->user_id = $user->id;
+            if ($json['values'][$i][18] != '') {
+                $token = Token::where('token', substr($json['values'][$i][18], 0, 9))->first();
 
-                if ($json['values'][$i][10] != '') {
-                    $child = new User;
-                    $child->name = $json['values'][$i][10];
-                    foreach ($levels as $key => $value) {
-                        if (strtolower($value) == strtolower($json['values'][$i][11])) {
-                            $child->level_id = $key;
-                        }
-                    }
-                    $child->save();
-                    $child->roles()->sync(Role::where('name', 'STUDENT')->first());
-                    $user->students()->sync($child->id);
-                    $subscription->child_id = $child->id;
-
-                    foreach ($packs as $pack) {
-                        if ($pack->name == $current_pack && $pack->level_id == $child->level_id) {
-                            $subscription->pack_id = $pack->id;
-                        }
-                    }
-                }
-                $subscription->user_id = $user->id;
-                if ($json['values'][$i][18] != '') {
-                    $token = Token::where('token', substr($json['values'][$i][18], 0, 9))->first();
-
-                    if ($token != null) {
-                        $token->user_id = $user->id;
-                        $token->save();
-                        $subscription->token_id = $token->id;
-                    } else {
-                        $token = new Token;
-                        $token->token = substr($json['values'][$i][18], 0, 9);
-                        $token->user_id = $user->id;
-                        $token->value = 100;
-                        $token->created_at = $date;
-                        $token->updated_at = $date;
-                        $token->validity_start = Carbon::now();
-                        $token->validity_end = Carbon::now()->addYear(1);
-                        $token->save();
-                        $subscription->token_id = $token->id;
-                    }
-
-                    if (substr($json['values'][$i][18], 10, 9) != '') {
-                        $new_subscription = new Subscription;
-                        $new_subscription->user_id = $user->id;
-                        $new_subscription->child_id = $child->id;
-                        $next_token = Token::where('token', substr($json['values'][$i][18], 10, 9))->first();
-
-                        if ($next_token != null) {
-                            // $next_token->token = substr($json['values'][$i][18], 10, 19);
-                            $next_token->user_id = $user->id;
-                            $next_token->save();
-                            $new_subscription->token_id = $next_token->id;
-                        } else {
-                            $next_token = new Token;
-                            $next_token->token = substr($json['values'][$i][18], 10, 10);
-                            $next_token->user_id = $user->id;
-                            $next_token->created_at = $date;
-                            $next_token->updated_at = $date;
-                            $next_token->validity_start = Carbon::now()->addYear(1);
-                            $next_token->validity_end = Carbon::now()->addYear(2);
-                            $next_token->value = 100;
-                            $next_token->save();
-                            $new_subscription->token_id = $next_token->id;
-                        }
-
-                        $new_subscription->pack_id = $subscription->pack_id;
-                        $new_subscription->save();
-                        if ($json['values'][$i][21] != '') {
-                            $new_payment = new Payment;
-                            if ($json['values'][$i][14] != '') {
-                                $new_payment->amount = $json['values'][$i][14];
-                            }
-                            foreach ($methodes as $key => $value) {
-                                if (strtolower($value) == strtolower($json['values'][$i][21])) {
-                                    $new_payment->payment_method_id = $key;
-                                }
-                            }
-                            $new_payment->user_id = $user->id;
-                            $new_payment->subscription_id = $new_subscription->id;
-                            $new_payment->save();
-                            $history = new PaymentHistory;
-                            $history->payment_id = $new_payment->id;
-                            $history->save();
-                            $new_delivery = new Delivery;
-                            if ($json['values'][$i][17] != '') {
-                                $new_delivery->delivery_status = $json['values'][$i][17];
-                            }
-                            if ($json['values'][$i][19] == 'TRUE') {
-                                $new_delivery->delivery_status = 'recieved';
-                            }
-                            if ($json['values'][$i][20] != '') {
-                                $new_delivery->delivery_date = date('Y-m-d', strtotime($json['values'][$i][20]));
-                            }
-                            if ($json['values'][$i][22] == 'TRUE') {
-                                $new_delivery->double_delivery = 'true';
-                            } else {
-                                $new_delivery->double_delivery = 'false';
-                            }
-
-                            if ($json['values'][$i][15] == 'TRUE') {
-                                $new_delivery->delivery_fees = 'true';
-                            } else {
-                                $new_delivery->delivery_fees = 'false';
-                            }
-
-                            $new_delivery->payment_id = $new_payment->id;
-                            $new_delivery->save();
-                        }
-                    }
+                if ($token != null) {
+                    $token->user_id = $user->id;
+                    $token->save();
+                    $subscription->token_id = $token->id;
                 } else {
-                    // test on pack type
-                    $generated_token = new Token;
-                    $generated_token->token = app('App\Http\Controllers\Admin\TokenController')->generateToken();
+                    $token = new Token;
+                    $token->token = substr($json['values'][$i][18], 0, 9);
+                    $token->user_id = $user->id;
+                    $token->value = 100;
+                    $token->created_at = $date;
+                    $token->updated_at = $date;
+                    $token->validity_start = Carbon::now();
+                    $token->validity_end = Carbon::now()->addYear(1);
+                    $token->save();
+                    $subscription->token_id = $token->id;
+                }
 
-                    $generated_token->user_id = $user->id;
-                    $generated_token->value = 100;
-                    $generated_token->created_at = $date;
-                    $generated_token->updated_at = $date;
-                    $generated_token->validity_start = Carbon::now();
-                    $generated_token->validity_end = Carbon::now()->addYear(1);
-                    $generated_token->save();
-                    $subscription->token_id = $generated_token->id;
+                if (substr($json['values'][$i][18], 10, 9) != '') {
+                    $new_subscription = new Subscription;
+                    $new_subscription->user_id = $user->id;
+                    $new_subscription->child_id = $child->id;
+                    $next_token = Token::where('token', substr($json['values'][$i][18], 10, 9))->first();
 
-                    // pack type next create other subscription
-                    if ($json['values'][$i][12] == '2AP') {
-                        $new_subscription = new Subscription;
-                        $new_subscription->user_id = $user->id;
-                        $new_subscription->child_id = $child->id;
+                    if ($next_token != null) {
+                        $next_token->token = substr($json['values'][$i][18], 10, 19);
+                        $next_token->user_id = $user->id;
+                        $next_token->save();
+                        $new_subscription->token_id = $next_token->id;
+                    } else {
                         $next_token = new Token;
-                        $next_token->token = app('App\Http\Controllers\Admin\TokenController')->generateToken() . '*';
+                        $next_token->token = substr($json['values'][$i][18], 10, 10);
                         $next_token->user_id = $user->id;
                         $next_token->created_at = $date;
                         $next_token->updated_at = $date;
@@ -878,98 +803,198 @@ class LogisticController extends Controller
                         $next_token->value = 100;
                         $next_token->save();
                         $new_subscription->token_id = $next_token->id;
+                    }
 
-                        $new_subscription->pack_id = $subscription->pack_id;
-                        $new_subscription->save();
+                    $new_subscription->pack_id = $subscription->pack_id;
+                    $new_subscription->save();
+                    $new_payment = null;
+                    if ($json['values'][$i][14] != '') {
+                        $new_payment = new Payment;
                         if ($json['values'][$i][21] != '') {
-                            $new_payment = new Payment;
-                            if ($json['values'][$i][14] != '') {
-                                $new_payment->amount = $json['values'][$i][14];
-                            }
+                            $new_payment->amount = $json['values'][$i][14];
+                        }
+                        $new_payment->payment_method_id = 3;
+                        if ($json['values'][$i][21] != '') {
                             foreach ($methodes as $key => $value) {
                                 if (strtolower($value) == strtolower($json['values'][$i][21])) {
                                     $new_payment->payment_method_id = $key;
                                 }
                             }
-                            $new_payment->user_id = $user->id;
-                            $new_payment->subscription_id = $new_subscription->id;
-                            $new_payment->save();
-                            $history = new PaymentHistory;
-                            $history->payment_id = $new_payment->id;
-                            $history->save();
-                            $new_delivery = new Delivery;
-                            if ($json['values'][$i][17] != '') {
-                                $new_delivery->delivery_status = $json['values'][$i][17];
-                            }
-                            if ($json['values'][$i][19] == 'TRUE') {
-                                $new_delivery->delivery_status = 'recieved';
-                            }
-                            if ($json['values'][$i][20] != '') {
-                                $new_delivery->delivery_date = date('Y-m-d', strtotime($json['values'][$i][20]));
-                            }
-                            if ($json['values'][$i][22] == 'TRUE') {
-                                $new_delivery->double_delivery = 'true';
-                            } else {
-                                $new_delivery->double_delivery = 'false';
-                            }
-
-                            if ($json['values'][$i][15] == 'TRUE') {
-                                $new_delivery->delivery_fees = 'true';
-                            } else {
-                                $new_delivery->delivery_fees = 'false';
-                            }
-
-                            $new_delivery->payment_id = $new_payment->id;
-                            $new_delivery->save();
                         }
+                        $new_payment->user_id = $user->id;
+                        $new_payment->subscription_id = $new_subscription->id;
+                        $new_payment->save();
+                        $history = new PaymentHistory;
+                        $history->payment_id = $new_payment->id;
+                        $history->payment_status_id = 1;
+
+                        $history->save();
+                    }
+                    if ($json['values'][$i][17] != '') {
+                        $new_delivery = new Delivery;
+                        $new_delivery->delivery_status = $json['values'][$i][17];
+
+                        if ($json['values'][$i][19] == 'TRUE') {
+                            $new_delivery->delivery_status = 'recieved';
+                        }
+                        if ($json['values'][$i][20] != '') {
+                            $new_delivery->delivery_date = date('Y-m-d', strtotime($json['values'][$i][20]));
+                        }
+                        if ($json['values'][$i][22] == 'TRUE') {
+                            $new_delivery->double_delivery = 'true';
+                        } else {
+                            $new_delivery->double_delivery = 'false';
+                        }
+
+                        if ($json['values'][$i][15] == 'TRUE') {
+                            $new_delivery->delivery_fees = 'true';
+                        } else {
+                            $new_delivery->delivery_fees = 'false';
+                        }
+                        if ($new_payment != null) {
+                            $new_delivery->payment_id = $new_payment->id;
+                        }
+                        $new_delivery->subscription_id = $new_subscription->id;
+                        $new_delivery->save();
                     }
                 }
-                $subscription->save();
-                if ($json['values'][$i][21] != '') {
-                    $payment = new Payment;
+            } else {
+                // test on pack type
+                $generated_token = new Token;
+                $generated_token->token = app('App\Http\Controllers\Admin\TokenController')->generateToken();
+
+                $generated_token->user_id = $user->id;
+                $generated_token->value = 100;
+                $generated_token->created_at = $date;
+                $generated_token->updated_at = $date;
+                $generated_token->validity_start = Carbon::now();
+                $generated_token->validity_end = Carbon::now()->addYear(1);
+                $generated_token->save();
+                $subscription->token_id = $generated_token->id;
+
+                // pack type next create other subscription
+                if ($json['values'][$i][12] == '2AP') {
+                    $new_subscription = new Subscription;
+                    $new_subscription->user_id = $user->id;
+                    $new_subscription->child_id = $child->id;
+                    $next_token = new Token;
+                    $next_token->token = app('App\Http\Controllers\Admin\TokenController')->generateToken() . '*';
+                    $next_token->user_id = $user->id;
+                    $next_token->created_at = $date;
+                    $next_token->updated_at = $date;
+                    $next_token->validity_start = Carbon::now()->addYear(1);
+                    $next_token->validity_end = Carbon::now()->addYear(2);
+                    $next_token->value = 100;
+                    $next_token->save();
+                    $new_subscription->token_id = $next_token->id;
+
+                    $new_subscription->pack_id = $subscription->pack_id;
+                    $new_subscription->save();
+                    $new_payment = null;
                     if ($json['values'][$i][14] != '') {
-                        $payment->amount = $json['values'][$i][14];
+                        $new_payment = new Payment;
+                        if ($json['values'][$i][14] != '') {
+                            $new_payment->amount = $json['values'][$i][14];
+                        }
+                        $new_payment->payment_method_id = 3;
+                        if ($json['values'][$i][21] != '') {
+                            foreach ($methodes as $key => $value) {
+                                if (strtolower($value) == strtolower($json['values'][$i][21])) {
+                                    $new_payment->payment_method_id = $key;
+                                }
+                            }
+                        }
+                        $new_payment->user_id = $user->id;
+                        $new_payment->subscription_id = $new_subscription->id;
+                        $new_payment->save();
+                        $history = new PaymentHistory;
+                        $history->payment_id = $new_payment->id;
+                        $history->payment_status_id = 1;
+
+                        $history->save();
                     }
+                    if ($json['values'][$i][17] != '') {
+                        $new_delivery = new Delivery;
+                        $new_delivery->delivery_status = $json['values'][$i][17];
+
+                        if ($json['values'][$i][19] == 'TRUE') {
+                            $new_delivery->delivery_status = 'recieved';
+                        }
+                        if ($json['values'][$i][20] != '') {
+                            $new_delivery->delivery_date = date('Y-m-d', strtotime($json['values'][$i][20]));
+                        }
+                        if ($json['values'][$i][22] == 'TRUE') {
+                            $new_delivery->double_delivery = 'true';
+                        } else {
+                            $new_delivery->double_delivery = 'false';
+                        }
+
+                        if ($json['values'][$i][15] == 'TRUE') {
+                            $new_delivery->delivery_fees = 'true';
+                        } else {
+                            $new_delivery->delivery_fees = 'false';
+                        }
+                        if ($new_payment != null) {
+                            $new_delivery->payment_id = $new_payment->id;
+                        }
+                        $new_delivery->subscription_id = $new_subscription->id;
+
+                        $new_delivery->save();
+                    }
+                }
+            }
+            $subscription->save();
+            $payment = null;
+            if ($json['values'][$i][14] != '') {
+                $payment = new Payment;
+                if ($json['values'][$i][14] != '') {
+                    $payment->amount = $json['values'][$i][14];
+                }
+                $payment->payment_method_id = 3;
+                if ($json['values'][$i][21] != '') {
                     foreach ($methodes as $key => $value) {
                         if (strtolower($value) == strtolower($json['values'][$i][21])) {
                             $payment->payment_method_id = $key;
                         }
                     }
-                    $payment->user_id = $user->id;
-                    $payment->subscription_id = $subscription->id;
-                    $payment->save();
-                    $history = new PaymentHistory;
-                    $history->payment_id = $payment->id;
-                    if (request('paystatus') > 0) {
-                        $history->payment_status_id = request('paystatus');
-                    }
-                    $history->save();
-                    $delivery = new Delivery;
-                    if ($json['values'][$i][17] != '') {
-                        $delivery->delivery_status = $json['values'][$i][17];
-                    }
-                    if ($json['values'][$i][19] == 'TRUE') {
-                        $delivery->delivery_status = 'recieved';
-                    }
-                    if ($json['values'][$i][20] != '') {
-                        $delivery->delivery_date = date('Y-m-d', strtotime($json['values'][$i][20]));
-                    }
-                    if ($json['values'][$i][22] == 'TRUE') {
-                        $delivery->double_delivery = 'true';
-                    } else {
-                        $delivery->double_delivery = 'false';
-                    }
-
-                    if ($json['values'][$i][15] == 'TRUE') {
-                        $delivery->delivery_fees = 'true';
-                    } else {
-                        $delivery->delivery_fees = 'false';
-                    }
-
-                    $delivery->payment_id = $payment->id;
-                    $delivery->save();
                 }
+                $payment->user_id = $user->id;
+                $payment->subscription_id = $subscription->id;
+                $payment->save();
+                $history = new PaymentHistory;
+                $history->payment_id = $payment->id;
+                $history->payment_status_id = 1;
+
+                $history->save();
             }
+            if ($json['values'][$i][17] != '') {
+                $delivery = new Delivery;
+                $delivery->delivery_status = $json['values'][$i][17];
+
+                if ($json['values'][$i][19] == 'TRUE') {
+                    $delivery->delivery_status = 'recieved';
+                }
+                if ($json['values'][$i][20] != '') {
+                    $delivery->delivery_date = date('Y-m-d', strtotime($json['values'][$i][20]));
+                }
+                if ($json['values'][$i][22] == 'TRUE') {
+                    $delivery->double_delivery = 'true';
+                } else {
+                    $delivery->double_delivery = 'false';
+                }
+
+                if ($json['values'][$i][15] == 'TRUE') {
+                    $delivery->delivery_fees = 'true';
+                } else {
+                    $delivery->delivery_fees = 'false';
+                }
+                if ($payment != null) {
+                    $delivery->payment_id = $payment->id;
+                }
+                $delivery->subscription_id = $subscription->id;
+                $delivery->save();
+            }
+            // }
         }
         // return view('admin.logistics.create.index');
     }

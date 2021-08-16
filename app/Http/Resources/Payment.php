@@ -21,7 +21,7 @@ class Payment extends JsonResource
             'current_status' => $this->current_status,
             'created_at' => $this->created_at->toDateTimeString(),
             'updated_at' => $this->updated_at->toDateTimeString(),
-            'delivery' => $this->delivery,
+            'delivery_id' => $this->delivery->id,
             'subscription_id'=>$this->subscription_id
         ];
     }

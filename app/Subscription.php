@@ -55,5 +55,9 @@ class Subscription extends Model
     {
         return $this->hasOne('App\Payment');
     }
+    public function delivery()
+    {
+        return $this->hasOne('App\Delivery');
+    }
 
 }

@@ -24,6 +24,7 @@ class Subscription extends JsonResource
             'child'=>$this->child,
             'payment'=>$this->payment,
             'token' => $this->token,
+            'delivery' => $this->delivery,
 
 
         ];

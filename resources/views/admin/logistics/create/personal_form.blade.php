@@ -196,7 +196,7 @@
                         <a class="btn btn-primary btn-sm active" data-toggle="fees" data-title="true">YES</a>
                         <a class="btn btn-primary btn-sm notActive" data-toggle="fees" data-title="false">NO</a>
                     </div>
-                    <input type="hidden" name="fees" id="fees" value="true">
+                    <input type="hidden" name="fees" id="fees" value="false">
                 </div>
             </div>
         </div>
