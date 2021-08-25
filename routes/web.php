@@ -74,14 +74,12 @@ Route::group(['namespace' => 'Admin', 'middleware' => 'admin'], function () {
         Route::post('/{source}', 'LogisticController@store')->name('logistics.store');
         Route::get('/', 'LogisticController@index')->name('logistics');
         Route::get('/create', 'LogisticController@create')->name('logistics.create');
-        Route::get('/editform/{id}', 'LogisticController@editForm');
+        // Route::get('/editform/{id}', 'LogisticController@editForm');
         Route::get('/edit/{id}', 'LogisticController@edit')->name('logistics.edit');
         Route::post('/update/{id}/{source}', 'LogisticController@update')->name('logistics.update');
         Route::get('/delete/{id}', 'LogisticController@destroy')->name('logistics.destroy');
         Route::get('/pdf/{type}/{id}', 'LogisticController@createPDF')->name('pdf');
-        Route::get('/form', function(){
-            return view('admin.logistics.create.form_template');
-        })->name('form');
+        Route::get('/session/{param}','LogisticController@insertSession')->name('session');
         
         Route::get('/loadata', 'LogisticController@dataSheets')->name('logistics.sheets');
         Route::get('/write', function(){
@@ -92,12 +90,12 @@ Route::group(['namespace' => 'Admin', 'middleware' => 'admin'], function () {
 
 
 
-        Route::get('/ticket', function(){
-            return view('admin.logistics.test');
-        });
-        Route::get('/construction', function(){
-            return view('admin.logistics.construction');
-        });
+        // Route::get('/ticket', function(){
+        //     return view('admin.logistics.test');
+        // });
+        // Route::get('/construction', function(){
+        //     return view('admin.logistics.construction');
+        // });
     });
 
 

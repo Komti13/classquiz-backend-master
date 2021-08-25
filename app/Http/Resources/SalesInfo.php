@@ -17,7 +17,7 @@ class SalesInfo extends JsonResource
         return [
             'id' => $this->id,
             'sales_manager' => $this->salesManager,
-            'source' => $this->source,
+            'source' => new Source($this->source),
             'ad' => $this->ad
         ];
     }

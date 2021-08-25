@@ -20,6 +20,8 @@ use App\SalesInfo;
 use App\Subscription;
 use App\UserCall;
 use PhpParser\Node\Expr\Cast\Object_;
+use App\Http\Resources\RendezVous as RendezResource;
+use App\RendezVous;
 
 class LogisticController extends Controller
 {
@@ -30,11 +32,14 @@ class LogisticController extends Controller
      */
     public function index()
     {
-
-        $calls = Subscription::orderBy('id', 'DESC')->with('user.usercalls.userStatus', 'user.usercalls.salesInfo.source', 'user.usercalls.salesInfo.ad', 'pack.packType', 'pack.level', 'payment.paymentMethod', 'payment.delivery','child')->paginate();
-            // $calls = Subscription::where('id',9002)->with('user.usercalls.sms')->get();
-       
-        return SubResource::collection($calls);
+        $subs = Subscription::where('id', 9606)->with('user.usercalls.salesInfo.source', 'payment.paymentMethod', 'token', 'user.usercalls.sms')->get();
+        return SubResource::collection($subs);
+    //     $rendez = RendezVous::where('subscription_id', 9583)->get();
+    //    return RendezResource::collection($rendez);
+        // $calls = Subscription::orderBy('id', 'DESC')->with('user.usercalls.userStatus', 'user.usercalls.salesInfo.source', 'user.usercalls.salesInfo.ad', 'pack.packType', 'pack.level', 'payment.paymentMethod', 'payment.delivery','child')->paginate();
+        
+        // return SubResource::collection($calls);
+        // $calls = Subscription::where('id',9002)->with('user.usercalls.sms')->get();
     //     $packs = Pack::select([
     //          'id', 'name', 'level_id','price'
     //     ])->get();

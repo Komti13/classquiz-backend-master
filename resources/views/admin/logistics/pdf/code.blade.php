@@ -10,11 +10,11 @@
 
 
 <body>
-    @foreach ($pages as $page) 
-         <div  style="height: 1000px;page-break-after: always;page-break-inside: avoid">
-           <p>{{ $page['id'] }} </p>
+    @foreach ($pages as $page)
+        <div style="height: 1000px;page-break-after: always;page-break-inside: avoid">
+            <p>{{ $page['id'] }} </p>
             <h1 style="margin-top: 500px;font-size: 100px;margin-left: 50px">{{ $page['token'] }}</h1>
-        </div> 
+        </div>
     @endforeach
 
 </body>

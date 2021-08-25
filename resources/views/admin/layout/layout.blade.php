@@ -10,6 +10,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}"/>
 
     <!-- BEGIN PLUGIN CSS -->
+
     <link href="{{ asset('assets/plugins/pace/pace-theme-flash.css') }}" rel="stylesheet" type="text/css"
           media="screen"/>
     <link href="{{ asset('assets/plugins/bootstrapv3/css/bootstrap.min.css') }}" rel="stylesheet" type="text/css"/>
@@ -298,7 +299,7 @@
                 </div>
             @endif
             @if ($message = Session::get('error'))
-                <div class="alert alert-danger mt-3">
+                <div class="alert alert-danger mt-3 ">
                     <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                     </button>
                     <p>{{ $message }}</p>

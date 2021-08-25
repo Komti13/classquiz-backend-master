@@ -20,8 +20,6 @@ class UserCall extends Model
     public function salesInfo()
     {
         return $this->belongsTo('App\SalesInfo');
-        // $sales = SalesInfo::all();
-        // return SalesResource::collection($sales);
     }
     public function sms()
     {

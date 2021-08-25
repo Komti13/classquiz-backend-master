@@ -3,14 +3,19 @@
     <!-- BEGIN PLUGIN CSS -->
     <link href="{{ asset('assets/plugins/bootstrap-select2/select2.css') }}" rel="stylesheet" type="text/css"
         media="screen" />
+
     <link href="{{ asset('assets/plugins/jquery-datatable/css/jquery.dataTables.css') }}" rel="stylesheet"
         type="text/css" />
+        <link href="{{ asset('assets/plugins/bootstrap-datepicker/css/datepicker.css') }}" rel="stylesheet"
+          type="text/css"/>
     <link href="{{ asset('assets/plugins/bootstrap-bootstrap-checkbox/css/bootstrap-checkbox.min.css') }}"
         rel="stylesheet" type="text/css" />
     <link href="{{ asset('assets/plugins/datatables-responsive/css/datatables.responsive.css') }}" rel="stylesheet"
         type="text/css" media="screen" />
-
+        
     <link rel="stylesheet" href="https://cdn.datatables.net/select/1.3.0/css/select.dataTables.min.css" />
+    <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.2.9/js/dataTables.responsive.min.js" />
+
     <style>
         table,
         #th1,
@@ -27,6 +32,62 @@
     <!-- END PLUGIN CSS -->
 @endsection
 @section('content')
+    <div class="row-fluid">
+        <div class="span12">
+            <div class="grid simple ">
+                <div class="grid-title">
+                    <h4>Filters</h4>
+                    <div class="tools">
+                        <a href="javascript:;" class="collapse"></a>
+                        <a href="javascript:;" class="remove"></a>
+                    </div>
+                </div>
+                <div class="grid-body">
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">Created at</label>
+                        <div class="col-sm-5">
+                            <div class="input-append success date form-group" style="width: 96%;">
+
+                                <input type="text" class="form-control" placeholder="From" id="created-at-from">
+                                <span class="add-on"><span class="arrow"></span><i class="fa fa-th"></i></span>
+                            </div>
+                        </div>
+                        <div class="col-sm-5">
+                            <div class="input-append success date form-group" style="width: 96%;">
+
+                                <input type="text" class="form-control" placeholder="To" id="created-at-to">
+                                <span class="add-on"><span class="arrow"></span><i class="fa fa-th"></i></span>
+                            </div>
+                        </div>
+                    </div>
+                    {{-- @if($role->name=='STUDENT') --}}
+                    <div class="form-group">
+                        <label for="subscription" class="col-sm-2 control-label">Subscription</label>
+                        <div class="col-sm-10">
+                            <select id="subscription">
+                                <option value=""></option>
+                                @foreach($packs as $pack)
+                                    <option value="{{$pack->id}}">{{$pack->name}}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="stauts" class="col-sm-2 control-label m-t-10">Status</label>
+                        <div class="col-sm-10">
+                            <select id="status" class="m-t-10">
+                                <option value=""></option>
+                                @foreach($status as $st)
+                                    <option value="{{$st->id}}">{{$st->name}}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+                    {{-- @endif --}}
+                </div>
+            </div>
+        </div>
+    </div>
     <div class="row-fluid">
         <div class="span12">
             <div class="grid simple ">
@@ -52,23 +113,51 @@
                         <a name='ticket' class="btn btn-primary print" target="_blank">Print Ticket</a>
 
                     </div>
-                    <table class="table" id="example5">
+                    <table class="table  table-striped" id="example5">
                         <thead>
                             <tr>
-                                <th></th>
-                                <th class="th" id="th1">Parent #ID</th>
-                                <th class="th" id="th1">Parent Name</th>
-                                <th class="th" id="th1">Phone</th>
-                                <th class="th" id="th1">Child #ID</th>
-                                <th class="th" id="th1">Child Name</th>
-                                <th class="th" id="th1">Child Level</th>
-                                <th class="th" id="th1" class="date">Creation Date</th>
-                                <th class="th" id="th1">Source</th>
-                                <th class="th" id="th1">Status</th>
-                                <th class="th" id="th1">Notes</th>
-                                <th class="th" id="th1">SMS sent</th>
-                                <th class="th" id="th1">Adrerss</th>
-                                <th class="th" id="th1" class="date">Conversion Date</th>
+                                <th><input type="checkbox" id="selectAll"></th>
+                                <th class="th line" >Parent #ID</th>
+                                <th class="th line" >Parent Name</th>
+                                <th class="th line" >Phone</th>
+                                <th class="th line" >Child #ID</th>
+                                <th class="th line" >Child Name</th>
+                                <th class="th line" >Child Level</th>
+                                <th  class="th line">Creation Date</th>
+                                <th class="th line" >Source</th>
+                                <th class="th line" >Status</th>
+                                <th class="th line" >Notes</th>
+                                <th class="th line" >SMS sent</th>
+                                <th class="th line" >Adrerss</th>
+                                <th  class="th line">Conversion Date</th>
+                                <th class="th line" >Payment</th>
+                                <th class="th line" >Delivery Status</th>
+                                <th class="th line" >Pack</th>
+                                <th class="th line" >Pack Type</th>
+                                <th class="th line" >Original Price</th>
+                                <th class="th line" >Current Price</th>
+                                <th class="th line" >Activation Code</th>
+                                <th class="th line" >Code Used</th>
+                                <th class="th line" >Final Status</th>
+                                <th class="th line">Action</th>
+                            </tr>
+                        </thead>
+                        <tfoot>
+                            <tr>
+                                <th><input class="form-check-input" type="checkbox" id="selectall"></th>
+                                <th class="th" >Parent #ID</th>
+                                <th class="th" >Parent Name</th>
+                                <th class="th" >Phone</th>
+                                <th class="th" >Child #ID</th>
+                                <th class="th" >Child Name</th>
+                                <th class="th" >Child Level</th>
+                                <th  class="date">Creation Date</th>
+                                <th class="th" >Source</th>
+                                <th class="th" >Status</th>
+                                <th class="th" >Notes</th>
+                                <th class="th" >SMS sent</th>
+                                <th class="th" >Adrerss</th>
+                                <th  class="date">Conversion Date</th>
                                 <th class="th" id="th2">Payment</th>
                                 <th class="th" id="th2">Delivery Status</th>
                                 <th class="th" id="th2">Pack</th>
@@ -79,9 +168,8 @@
                                 <th class="th" id="th2">Code Used</th>
                                 <th class="th" id="th2">Final Status</th>
                                 <th class="th" id="th3">Action</th>
-                                {{-- <th>Print</th> --}}
                             </tr>
-                        </thead>
+                        </tfoot>
                         <tbody>
 
                         </tbody>
@@ -104,6 +192,8 @@
     <script type="text/javascript" src="{{ asset('assets/js/datatables.js') }}"></script>
     <script src="{{ asset('assets/plugins/bootstrap-select2/select2.min.js') }}" type="text/javascript"></script>
     <script src="https://cdn.datatables.net/select/1.3.0/js/dataTables.select.min.js"></script>
+    <script src="{{ asset('assets/plugins/bootstrap-datepicker/js/bootstrap-datepicker.js') }}"
+    type="text/javascript"></script>
 
     <!-- END JAVASCRIPTS -->
     <script src="https://apis.google.com/js/api.js"></script>
@@ -185,58 +275,77 @@
     </script>
     <script type="text/javascript">
         $(document).ready(function() {
-            /////*******************Search Inputs*************/////////////////
-            $('#example5 thead tr ').clone(true).appendTo('#example5 thead');
 
-            $('#example5 thead tr:eq(1) .th').each(function(i) {
-                var title = $(this).text();
-                console.log(title)
-                $(this).html(
-                    '<input style="text-align:center;margin-bottom:36px !important" type="text" placeholder="Search ' +
-                    title + '" />');
-                $('input', this).on('keyup change', function() {
-                    if (table.column(i).search() !== this.value) {
-                        // console.log(table.column(i).search());
-                        // console.log(this.value);
-                        table
-                            .column(i)
-                            .search(this.value)
-                            .draw();
-                    }
-                });
-            });
-            $('#example5 thead tr:eq(1) #th3').each(function(i) {
+            /////*******************Search Inputs*************/////////////////
+            $('#example5 thead tr').clone(true).appendTo('#example5 thead');
+
+            // $('#example5 thead tr:eq(1) .th').each(function(i) {
+            //     var title = $(this).text();
+                // console.log(title)
+                   // if (table.column(i).search() !== this.value) {
+                    //     // console.log(table.column(i).search());
+                    //     // console.log(this.value);
+                    //     table
+                    //         .column(i)
+                    //         .search(this.value)
+                    //         .draw();
+                    // }
+                        // if (table.column(i).search() !== this.value) {
+                    //     table.column(i).search(this.value).draw();
+                    // }
+                // $(this).html(
+                //     '<input style="text-align:center;margin-bottom:36px !important" type="text" placeholder="Search ' +
+                //     title + '" />');
+                // $('input', this).on('keyup change', function() {
+                 
+                // });
+            // });
+            $('#example5 thead tr:eq(1) th').each(function(i) {
                 var title = $(this).text();
                 $(this).html(
                     '<div style="width :150px"></div>'
                 );
             });
-            $('#example5 thead tr:eq(1) .date').each(function(i) {
-                var title = $(this).text();
-                $(this).html('from <input  type="date" placeholder="Search ' + title +
-                    '" /> To <input  type="date" placeholder="Search ' + title + '" />');
+            // $('#example5 thead tr:eq(1) .date').each(function(i) {
+            //     var title = $(this).text();
+            //     $(this).html('from <input  type="date" placeholder="Search ' + title +
+            //         '" /> To <input  type="date" placeholder="Search ' + title + '" />');
 
-                $('input', this).on('keyup change', function() {
-                    if (table.column(i).search() !== this.value) {
-                        table.column(i).search(this.value).draw();
-                    }
+                // $('input', this).on('keyup change', function() {
+                
 
-                });
-            });
-            var table = $('#example5').DataTable({
+                // });
+            // });
+            var table = $('#example5').dataTable({
+                // searching: false,
                 processing: true,
                 serverSide: true,
                 "scrollX": true,
                 orderCellsTop: true,
-                ajax: "{{ route('logistics') }}",
+		        fixedHeader: true,
+                "scrollY": 600,
+                responsive: true,
+                // orderCellsTop: false,
+                ajax: {
+                url: "{{ route('logistics') }}",
+                data: function (d) {
+                    d.subscription = $("#subscription").val();
+                    d.created_at_from = $("#created-at-from").val();
+                    d.created_at_to = $("#created-at-to").val();
+                    d.status = $("#status").val();
+                }
+            },
+                'fnDrawCallback': function() {
+                initPopover();
+                  },
                 columns: [{
-                        orderable: false,
+                        // searchable: false,
+                        // orderable: false,
                         className: 'select-checkbox',
-                        targets: 1,
-                        defaultContent: ''
+                        defaultContent: '',
+                        // targets: 0,
                     },
                     {
-                        orderable: false,
                         searchable: false,
                         data: 'user.id',
                         name: 'user.id',
@@ -249,6 +358,7 @@
                         },
                     },
                     {
+                        searchable: false,
                         data: 'user.name',
                         name: 'user.name',
                         "render": function(data, type, row) {
@@ -260,6 +370,7 @@
                         }
                     },
                     {
+                        searchable: true,
                         data: 'user.phone',
                         name: 'user.phone',
                         "render": function(data, type, row) {
@@ -273,6 +384,7 @@
                         }
                     },
                     {
+                        searchable: false,
                         data: 'child.id',
                         "render": function(data, type, row) {
                             if (data == null) {
@@ -283,6 +395,7 @@
                         }
 
                     }, {
+                        searchable: false,
                         data: 'child.name',
                         "render": function(data, type, row) {
                             if (data == null) {
@@ -294,6 +407,7 @@
 
                     },
                     {
+                        searchable: false,
                         data: 'pack.level.name',
                         "render": function(data, type, row) {
                             if (data == null) {
@@ -305,7 +419,8 @@
 
                     },
                     {
-                        data: 'user.usercalls.created_at',
+                        searchable: false,
+                        data: 'created_at',
                         "render": function(data, type, row) {
                             if (data == null) {
                                 return '----';
@@ -313,11 +428,11 @@
                                 return data;
                             }
                         },
-                        // "searchable": false
+
 
                     },
                     {
-                        // searchable: false,
+                        searchable: false,
                         // orderable: false,
                         data: 'user.usercalls.sales_info.source.source',
                         "render": function(data, type, row) {
@@ -370,7 +485,7 @@
                     },
                     {
 
-                        data: 'user.usercalls.conversation_date',
+                        data: 'conversion_date',
                         "render": function(data, type, row) {
                             if (data == null) {
                                 return '----';
@@ -491,7 +606,7 @@
                         // orderable: false,
                         // searchable: false,
                         render: function(data, type, row, meta) {
-                            return `<div class="btn-group"> <a class="btn btn-mini btn-white" href="/logistics/editform/${row.id}" style="margin-right:10px">Edit</a>
+                            return `<div class="btn-group"> <a class="btn btn-mini btn-white" href="/logistics/edit/${row.id}" style="margin-right:10px">Edit</a>
                                 <a class="btn btn-mini btn-danger" href="/logistics/delete/${row.id}">Delete</a> </div>`;
                         },
                     },
@@ -510,11 +625,36 @@
                 },
             });
 
-
+            $("#selectAll,#selectall").on("click", function(e) {
+                if ($(this).is(":checked")) {
+                    table.rows().select();
+                } else {
+                    table.rows().deselect();
+                }
+            });
 
             // Search bar
-            $("#example5_filter").hide();
+            // $("#example5_filter").hide();
+          
+        function initPopover() {
+            table.$('[data-toggle="popover"]').popover().click(function(e) {
+                e.preventDefault();
+            });
 
+            $('#subscription, #status').select2({
+                width: '100%',
+                placeholder: "Choose an option",
+                allowClear: true
+            });
+
+            $('.input-append.date').datepicker({
+                autoclose: true,
+                todayHighlight: true,
+            });
+        }
+        $("#created-at-to, #created-at-from, #subscription, #status").on('change', function () {
+            table.DataTable().draw();
+        });
 
             $('.print').click(function() {
                 type = $(this).attr('name')
@@ -526,22 +666,12 @@
                     var len = table.rows({
                         selected: true
                     }).count();
-                    // console.log(len);
-                    var ids=[];
+                    var ids = [];
                     for (let i = 0; i < len; i++) {
                         ids[i] = table.rows({
                             selected: true
                         }).data()[i].id;
                     }
-                    // console.log(table.rows({
-                    //     selected: true
-                    // }).data()[i])
-                    // var userid = table.rows({
-                    //     selected: true
-                    // }).data()[i].user.id;
-                    // var token = table.rows({
-                    //     selected: true
-                    // }).data()[i].token.token;
                     var url = "{{ route('pdf', [':type', ':id']) }}";
                     url = url.replace(':type', type);
                     url = url.replace(':id', ids);
@@ -556,7 +686,7 @@
                             });
                             var link = document.createElement('a');
                             link.href = window.URL.createObjectURL(blob);
-                            link.download = type +".pdf";
+                            link.download = type + ".pdf";
                             link.click();
                         }
                     };
@@ -569,7 +699,7 @@
 
             });
             $("div.toolbar").html(
-                '<div class="table-tools-actions"><a class="btn btn-primary" href="{{ route('form') }}" style="margin-left:12px" id="test2">Add</a></div>'
+                '<div class="table-tools-actions"><a class="btn btn-primary" href="{{ route('logistics.create') }}" style="margin-left:12px" id="test2">Add</a></div>'
             );
 
         });

@@ -22,11 +22,11 @@ class UserCall extends JsonResource
             'updated_at' => $this->updated_at,//->toDateTimeString(),
             'conversation_date' => $this->conversation_date,//->toDateTimeString(),
             'call_type'=>$this->call_type,
-            'Sms' => $this->sms,
+            'Sms' => new Sms($this->sms),
             'Sms_sent' => $this->sms_sent,
-            'sales_info' => $this->salesInfo,
+            'sales_info' => new SalesInfo($this->salesInfo),
             'user' => $this->user,
-            'user_status'=>$this->userStatus
+            'user_status'=>new SalesInfo($this->userStatus)
         ];
     }
 }
